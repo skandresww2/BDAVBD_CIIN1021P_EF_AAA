@@ -1,0 +1,25 @@
+INICIO RÁPIDO
+Dos sesiones de 120 minutos. Se conservan cinco ejercicios.
+Sesión 1: preparación 20, E01 40, E02 45 y cierre 15 minutos.
+Sesión 2: arranque 10, E03 35, E04 35, E05 30 y cierre 10 minutos.
+E05 incluye 15 minutos guiados y 15 de reto integrador propuesto.
+
+1. Descomprime este paquete en tu computadora.
+2. Abre https://colab.research.google.com y Archivo > Subir cuaderno.
+3. Selecciona el notebook de la sesión 1 y conecta un entorno CPU.
+4. Ejecuta las celdas de instalación, Java e inicio de Spark, en orden.
+5. Cuando aparezca Elegir archivos, sube datos_tema07.zip SIN descomprimir.
+6. Completa los TODO antes de ejecutar sus celdas. Guarda tu propio notebook.
+7. Para sesión 2 abre su notebook y repite el arranque. Es independiente.
+8. Al terminar descarga resumen_region.csv y resultados_tema07.zip.
+9. Abre Power BI Desktop para crear y guardar el reporte como indica la guía.
+10. Resuelve el reto de plástico por región al final de E05 y descarga
+    reto_plastico.csv por separado. No requiere otro gráfico ni otro PBIX.
+
+Las guías de Word contienen teoría breve, pasos, controles y evidencias.
+La versión docente tiene todos los TODO y el reto resueltos. La ampliación
+de sensores es opcional y queda fuera de las dos sesiones de 120 minutos.
+Los datos de MoviTrack son una copia didáctica con los mismos totales conocidos,
+no una conexión ni una exportación automática del servidor del usuario.
+Ocean Clean-Up usa datos sintéticos y playas ficticias.
+Mantener el paquete DOCENTE fuera de la distribución a estudiantes.

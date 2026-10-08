@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tema 06 · Compañero de laboratorio MoviTrack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Marca UPN */
+  --lucuma:#FDBA30; --black:#000000;
+  --purple:#9500FF; --magenta:#FF00DA; --cyan:#00B9FF;
+  /* Tokens de interfaz */
+  --paper:#FFFFFF; --surface:#FFFFFF; --grid:rgba(0,0,0,.055);
+  --ink:#000000; --muted:#4A4A4A; --blue:#7400C7; --blue-soft:#FFF1D1;
+  --margin:#FDBA30; --mark:#FDBA30; --mark-ink:#000000;
+  --ok:#137A45; --ok-soft:#DDF3E6; --bad:#B0183A; --bad-soft:#FCE3E8;
+  --line:#E3E3E3; --code-bg:#1E1E1E; --code-ink:#D4D4D4;
+  --top-bg:#000000; --top-ink:#FFFFFF; --anchor-bg:#000000; --anchor-ink:#FDBA30; --tick-done:#000000;
+  --f-head:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-code:"JetBrains Mono", Consolas, "Courier New", monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#000000; --surface:#121212; --grid:rgba(253,186,48,.07);
+    --ink:#FFFFFF; --muted:#B8B8B8; --blue:#C78BFF; --blue-soft:#2A2110;
+    --ok:#5FD39A; --ok-soft:#10301F; --bad:#FF7D9A; --bad-soft:#3A121C;
+    --line:#2E2E2E; --top-bg:#000000; --top-ink:#FFFFFF; --anchor-bg:#FDBA30; --anchor-ink:#000000; --tick-done:#FDBA30;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#000000; --surface:#121212; --grid:rgba(253,186,48,.07);
+  --ink:#FFFFFF; --muted:#B8B8B8; --blue:#C78BFF; --blue-soft:#2A2110;
+  --ok:#5FD39A; --ok-soft:#10301F; --bad:#FF7D9A; --bad-soft:#3A121C;
+  --line:#2E2E2E; --top-bg:#000000; --top-ink:#FFFFFF; --anchor-bg:#FDBA30; --anchor-ink:#000000; --tick-done:#FDBA30;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{
+  margin:0;min-height:100%;color:var(--ink);font:17px/1.6 var(--f-body);
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;
+}
+a{color:var(--blue)}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:4px}
+code,pre{font-family:var(--f-code);font-size:.86em}
+code{background:var(--blue-soft);padding:.05em .35em;border-radius:4px}
+pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow-x:auto;line-height:1.5;margin:12px 0}
+pre code{background:none;padding:0;color:inherit}
+
+/* Cabecera */
+.top{
+  position:sticky;top:0;z-index:20;
+  padding-top:env(safe-area-inset-top,0px);
+  background:var(--top-bg);color:var(--top-ink);
+  border-bottom:4px solid var(--lucuma);
+}
+.top-in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:18px}
+.brand{font-family:var(--f-head);font-weight:800;font-size:1.05rem;line-height:1.2}
+.brand small{display:block;font-family:var(--f-body);font-weight:400;font-size:.8rem;color:#BDBDBD}
+.brand .uni{color:var(--lucuma)}
+.meter{flex:1;display:flex;align-items:center;gap:10px;min-width:120px}
+.meter-bar{flex:1;height:8px;background:#333;border-radius:99px;overflow:hidden}
+.meter-bar span{display:block;height:100%;background:var(--lucuma);width:0;transition:width .4s ease}
+.meter b{font-size:.85rem;font-weight:700;min-width:3.2em;text-align:right}
+.icon-btn{border:1.5px solid var(--lucuma);background:transparent;color:var(--lucuma);font-weight:700;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:.85rem}
+
+/* Estructura */
+.shell{max-width:1180px;margin:0 auto;padding:24px 20px 80px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:32px}
+nav.rail{position:sticky;top:88px;align-self:start}
+.rail ol{list-style:none;margin:0;padding:0}
+.rail li+li{margin-top:4px}
+.rail button{
+  width:100%;text-align:left;border:0;background:none;cursor:pointer;
+  padding:9px 12px;border-radius:8px;display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;
+}
+.rail button:hover{background:var(--blue-soft)}
+.rail button[aria-current="true"]{background:var(--lucuma);color:#000}
+.rail button[aria-current="true"] .sub,.rail button[aria-current="true"] .pc{color:#000}
+.rail .nm{font-weight:700;font-size:.95rem}
+.rail .sub{grid-column:1/-1;font-size:.78rem;color:var(--muted)}
+.rail .pc{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.rail .pc.full{color:var(--ok);font-weight:700}
+.rail-foot{margin-top:18px;font-size:.8rem;color:var(--muted);padding:0 12px}
+.rail-foot button{display:inline;width:auto;padding:0;color:var(--bad);text-decoration:underline;font-size:.8rem}
+
+/* Página de cuaderno */
+.page{
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  position:relative;padding:36px 40px 44px 88px;min-width:0;
+}
+.page::before{content:"";position:absolute;top:0;bottom:0;left:62px;width:4px;background:var(--lucuma)}
+.kicker{color:var(--muted);font-size:.9rem;margin:0 0 4px}
+h1{font-family:var(--f-head);font-weight:800;font-size:clamp(1.8rem,3.2vw,2.5rem);line-height:1.1;margin:0 0 14px;letter-spacing:-.01em;max-width:24ch}
+h2{font-family:var(--f-head);font-weight:600;font-size:1.3rem;line-height:1.25;margin:36px 0 10px}
+h3{font-size:1.02rem;margin:0}
+p{margin:0 0 12px;max-width:68ch}
+.lead{font-size:1.1rem;max-width:62ch}
+.objective{border-left:6px solid var(--ink);background:var(--blue-soft);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0 8px;max-width:72ch}
+
+/* Hero de inicio */
+.anchors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:22px 0 8px;background:var(--anchor-bg);color:var(--anchor-ink);border-radius:10px;overflow:hidden;max-width:640px}
+.anchors div{padding:16px 12px;text-align:center}
+.anchors div+div{border-left:1px solid color-mix(in srgb, var(--anchor-ink) 30%, transparent)}
+.anchors strong{display:block;font-family:var(--f-head);font-weight:800;font-size:clamp(1.6rem,4vw,2.4rem);line-height:1}
+.anchors span{font-size:.82rem;opacity:.85}
+.bridge{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin:18px 0;max-width:720px}
+.bridge > div{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--paper)}
+.bridge > div.arrow{border:0;background:none;padding:0;align-self:center;font-family:var(--f-head);font-size:1.6rem;color:var(--purple)}
+.bridge > div:first-child{border-top:4px solid var(--cyan)}
+.bridge > div:last-child{border-top:4px solid var(--magenta)}
+.anchors strong{letter-spacing:-.02em}
+.bridge h3{font-family:var(--f-head);font-weight:600;margin-bottom:6px}
+.bridge ul{margin:0;padding-left:18px;font-size:.93rem}
+table.route{border-collapse:collapse;width:100%;max-width:720px;font-size:.93rem;margin:10px 0}
+.route-wrap{overflow-x:auto}
+table.route th,table.route td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+table.route th{font-weight:700;color:var(--ink);font-size:.85rem;border-bottom:3px solid var(--lucuma)}
+.howto{counter-reset:h;list-style:none;padding:0;margin:8px 0;max-width:68ch}
+.howto li{counter-increment:h;position:relative;padding-left:34px;margin:8px 0}
+.howto li::before{content:counter(h);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--lucuma);color:#000;font-size:.8rem;font-weight:700;display:grid;place-items:center}
+
+/* Pasos */
+.step{position:relative;padding:18px 0 20px;border-top:1px dashed var(--line)}
+.step:first-of-type{border-top:0}
+.tick{
+  position:absolute;left:-58px;top:18px;width:30px;height:30px;border-radius:7px;
+  border:2px solid var(--ink);background:var(--surface);cursor:pointer;display:grid;place-items:center;padding:0;
+}
+.tick svg{width:18px;height:18px;opacity:0;transform:scale(.6);transition:all .18s ease}
+.step.done .tick{background:#000;border-color:var(--tick-done)}
+.step.done .tick svg{opacity:1;transform:scale(1)}
+.step-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.tag{font-size:.78rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--cyan);color:#000}
+.tag.todo{background:#000;color:var(--lucuma);box-shadow:0 0 0 1.5px var(--lucuma)}
+.step.done h3{text-decoration:line-through;text-decoration-color:var(--lucuma);text-decoration-thickness:2px}
+.step-body{margin-top:8px}
+.step-body ul,.step-body ol{margin:6px 0 10px;padding-left:22px;max-width:68ch}
+.step-body li{margin:4px 0}
+.why{font-size:.93rem;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;margin:10px 0;max-width:66ch}
+
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:7px 13px;cursor:pointer;font-size:.9rem;font-weight:700}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--lucuma);border-color:var(--lucuma);color:#000}
+.btn.primary:hover{border-color:var(--ink);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.btn[disabled]{opacity:.5;cursor:default}
+
+.panel{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--paper)}
+.panel h4{margin:0 0 8px;font-size:.92rem}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 14px}
+.checks label{display:flex;flex-direction:column;font-size:.86rem;color:var(--muted);gap:4px}
+.checks input{border:1.5px solid var(--line);border-radius:7px;padding:7px 10px;background:var(--surface);font-variant-numeric:tabular-nums;width:100%}
+.checks input.ok{border-color:var(--ok);background:var(--ok-soft)}
+.checks input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.feedback{margin-top:10px;font-size:.92rem;min-height:1.2em}
+.feedback.ok{color:var(--ok);font-weight:700}
+.feedback.bad{color:var(--bad)}
+
+.hint{margin-top:10px;padding:10px 14px;border-radius:8px;border-left:4px solid var(--purple);background:color-mix(in srgb, var(--lucuma) 22%, var(--surface));color:var(--ink);font-size:.95rem;max-width:70ch}
+.hint b{display:block;font-size:.8rem;margin-bottom:2px}
+
+details.trouble{margin-top:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+details.trouble summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:.92rem;color:var(--bad)}
+details.trouble .tb{padding:0 14px 12px}
+.tb dl{margin:0}
+.tb dt{font-weight:700;margin-top:10px;font-size:.93rem}
+.tb dd{margin:4px 0 0;font-size:.93rem;max-width:68ch}
+
+/* Autoevaluación */
+.quiz{margin-top:8px}
+.q{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;background:var(--paper)}
+.q p{font-weight:700;margin-bottom:8px}
+.opts{display:grid;gap:6px}
+.opt{border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 12px;text-align:left;cursor:pointer;font-size:.95rem}
+.opt:hover{border-color:var(--ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.explain{margin-top:8px;font-size:.93rem;max-width:68ch}
+
+textarea{width:100%;min-height:84px;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface);resize:vertical}
+.reflect label{display:block;font-weight:700;margin:16px 0 6px;max-width:68ch}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:36px;padding-top:18px;border-top:1px solid var(--line)}
+.done-banner{margin-top:14px;padding:12px 16px;border-radius:10px;background:var(--ok-soft);color:var(--ok);font-weight:700;display:none}
+.done-banner.show{display:block}
+
+@media (max-width: 880px){
+  .shell{grid-template-columns:1fr;gap:16px;padding:14px 12px 60px}
+  nav.rail{position:static}
+  .rail ol{display:flex;overflow-x:auto;gap:6px;padding-bottom:6px}
+  .rail li+li{margin-top:0}
+  .rail button{white-space:nowrap;min-width:max-content;border:1px solid var(--line);background:var(--surface)}
+  .rail .sub{display:none}
+  .rail-foot{display:none}
+  .page{padding:24px 18px 32px 56px}
+  .page::before{left:38px}
+  .tick{left:-46px;width:28px;height:28px}
+  .top-in{padding:10px 14px;gap:12px}
+  .brand small{display:none}
+  .bridge{grid-template-columns:1fr}
+  .bridge .arrow{transform:rotate(90deg);justify-self:center}
+}
+@media (max-width: 520px){
+  .anchors{grid-template-columns:repeat(2,1fr)}
+  .anchors div:nth-child(3){border-left:0}
+  .anchors div:nth-child(n+3){border-top:2px solid var(--ink)}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Compañero de laboratorio <span class="uni">UPN</span><small>Base de Datos Avanzadas y Big Data · Tema 06</small></div>
+    <div class="meter" aria-label="Progreso total">
+      <div class="meter-bar"><span id="meterFill"></span></div>
+      <b id="meterTxt">0 %</b>
+    </div>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Cambiar tema claro u oscuro">Tema</button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Secciones">
+    <ol id="railList"></ol>
+    <div class="rail-foot">Tu avance se guarda en este navegador. <button type="button" id="resetBtn">Reiniciar avance</button></div>
+  </nav>
+  <main class="page" id="page" tabindex="-1"></main>
+</div>
+
+<script>
+/* ---------- Contenido ---------- */
+const SECTIONS = [
+{
+  id:"inicio", name:"Inicio", sub:"Por qué el Tema 06", kind:"intro"
+},
+{
+  id:"entorno", name:"Entorno", sub:"Paso 0 · preparación",
+  title:"Antes de empezar: comprueba que el almacén sigue ahí",
+  objective:"Confirmar que MoviTrackTema05_Practica conserva sus datos y que tienes las cuatro herramientas de la sesión. Los cuatro números que obtengas aquí son la referencia de todo el laboratorio.",
+  steps:[
+    {id:"e0a", title:"Verifica tus herramientas",
+     body:`<ul>
+      <li><b>SQL Server + SSMS</b>, para los Ejercicios 01 y 04.</li>
+      <li><b>Visual Studio</b> con la extensión <i>Microsoft Analysis Services Projects</i>. Comprueba que aparece la plantilla <i>Analysis Services Multidimensional Project</i>.</li>
+      <li><b>Report Builder</b> y <b>Power BI Desktop</b>.</li>
+      <li>Acceso a una instancia de <b>Analysis Services en modo multidimensional</b>.</li></ul>`,
+     trouble:[
+      ["No aparece la plantilla multidimensional en Visual Studio","Ve a <i>Extensiones → Administrar extensiones</i>, busca <i>Microsoft Analysis Services Projects</i>, instálala y reinicia Visual Studio. Sin esta extensión no podrás abrir archivos <code>.cube</code> ni <code>.dim</code>."]
+     ]},
+    {id:"e0b", title:"Ejecuta la consulta del Paso 0",
+     body:`<pre><code>USE MoviTrackTema05_Practica;
+GO
+SELECT
+    (SELECT COUNT(*)     FROM dbo.FactViajeE04)    AS Viajes,
+    (SELECT SUM(Importe) FROM dbo.FactViajeE04)    AS ImporteTotal,
+    (SELECT COUNT(*)     FROM dbo.DimServicioE02)  AS Servicios,
+    (SELECT COUNT(*)     FROM dbo.DimUbicacionE02) AS Ubicaciones;
+GO</code></pre>`,
+     checks:[["Viajes",6],["ImporteTotal",120],["Servicios",3],["Ubicaciones",3]],
+     trouble:[
+      ["La base no existe o los números no coinciden","Abre en SSMS el archivo <code>JP_BD_SCRIPT_RECUPERACION_TEMA06.sql</code> y ejecútalo completo. Es idempotente: puedes correrlo varias veces sin duplicar datos."]
+     ]},
+    {id:"e0c", title:"Crea la carpeta Evidencias-Tema06",
+     body:`<p>Créala junto a los archivos del Tema 05. Ahí guardarás los scripts <code>Ejercicio01-Tema06.sql</code> a <code>Ejercicio04-Tema06.sql</code>, la solución de Analysis Services, el reporte, el dashboard y tus capturas.</p>
+     <p class="why">Guarda las carpetas completas de los proyectos. Una captura demuestra que algo funcionó una vez; el proyecto demuestra que lo construiste tú.</p>`}
+  ]
+},
+{
+  id:"ej01", name:"Ejercicio 01", sub:"6.1 · Operaciones OLAP en SQL",
+  title:"Operaciones OLAP sobre el Data Warehouse",
+  objective:"La gerencia pide viajes por distrito, subtotales por mes y un total general en el mismo reporte. Vas a producir varios niveles de agregación en una sola consulta y entender qué hace una herramienta analítica cuando alguien expande o contrae una jerarquía.",
+  steps:[
+    {id:"e1p1", title:"Paso 1. Agregación de un solo nivel",
+     body:`<p>Ejecuta la consulta <code>GROUP BY u.Distrito</code> de la guía. Es una agregación clásica: un nivel, una fila por distrito.</p>`,
+     checks:[["Comas · viajes",3],["Comas · importe",65],["Los Olivos · viajes",2],["Independencia · importe",25]]},
+    {id:"e1p2", title:"Paso 2. Varios niveles con ROLLUP",
+     body:`<p>Ejecuta <code>GROUP BY ROLLUP (t.Anio, t.Mes, u.Distrito)</code>. Busca las filas que tienen <code>NULL</code>.</p>
+     <p class="why">Esos NULL no son datos faltantes: son filas de subtotal. ROLLUP recorre la jerarquía de derecha a izquierda: primero quita Distrito (subtotal del mes), luego Mes (subtotal del año) y al final todo (total general).</p>`,
+     checks:[["Total general · viajes",6],["Total general · importe",120]],
+     hints:["El total general es la fila donde Anio, Mes y Distrito son NULL a la vez.","Si no la ves, baja hasta el final o fíjate en la primera fila: con ORDER BY, los NULL suelen ordenarse primero."]},
+    {id:"e1p3", title:"Paso 3. Distinguir el subtotal del dato ausente",
+     body:`<p>Ejecuta la consulta con <code>GROUPING()</code> y <code>CASE</code>. Ahora cada subtotal tiene una etiqueta legible.</p>
+     <p class="why">GROUPING devuelve 1 cuando el NULL lo creó la agregación y 0 cuando el NULL viene del dato. Sin esa función, un subtotal y un valor ausente se ven iguales, y quien decide no puede distinguirlos.</p>`,
+     checks:[["Septiembre · viajes",4],["Septiembre · importe",65],["Octubre · viajes",2],["Octubre · importe",55]]},
+    {id:"e1p4", title:"Paso 4. CUBE y GROUPING SETS",
+     body:`<p>Ejecuta las dos consultas. Compara:</p>
+     <ul><li><b>CUBE</b> genera <i>todas</i> las combinaciones posibles de los atributos.</li>
+     <li><b>GROUPING SETS</b> genera <i>solo</i> los niveles que indicas. <code>()</code> es el total general.</li></ul>`},
+    {id:"e1t1", todo:true, title:"TODO 1. Completar el ROLLUP por servicio",
+     body:`<p>Reemplaza los guiones bajos del <code>GROUP BY</code> por el operador que genera subtotales siguiendo una jerarquía. No modifiques la lista del SELECT.</p>`,
+     checks:[["Subtotal ESTANDAR",60],["Subtotal EJECUTIVO",35],["Subtotal ENCOMIENDA",25],["Total general",120]],
+     hints:["Es el mismo operador que usaste en el Paso 2.","Es ROLLUP. Como Servicio va primero en la lista, el subtotal se genera por servicio."]},
+    {id:"e1t1b", todo:true, title:"TODO 1B. Subtotales con etiquetas",
+     body:`<p>Completa los cuatro espacios: la función que cuenta viajes, la que suma importes, el operador y el orden de las columnas.</p>`,
+     checks:[["Total general · viajes",6],["Total general · importe",120]],
+     hints:["Para (1) y (2) usa las mismas funciones del Paso 1. Para (3) ya identificaste el operador en el TODO 1.","Para (4) pregúntate: cuando ROLLUP quita la última columna, ¿cuál debe quedar para que el subtotal sea por servicio? Esa va primero."],
+     trouble:[["El subtotal sale por distrito en vez de por servicio","Invertiste el orden. ROLLUP (A, B) genera subtotales de A. Si quieres subtotal por servicio, Servicio va primero."]]},
+    {id:"e1t2", todo:true, title:"TODO 2. Razonamiento: CUBE frente a ROLLUP",
+     body:`<p>Cuenta las filas de la consulta con CUBE del Paso 4. Cámbiala a ROLLUP y cuenta otra vez. Escribe tus respuestas como comentarios en tu script.</p>`,
+     checks:[["Filas con CUBE",11],["Filas con ROLLUP",8]],
+     hints:["La diferencia son 3 filas. Fíjate en cuáles tienen Distrito en NULL pero Servicio con nombre.","Con ROLLUP (Distrito, Servicio) nunca se quita Distrito dejando Servicio. CUBE sí lo hace: esas filas son los subtotales por servicio, sin importar el distrito."]},
+    {id:"e1t3", todo:true, title:"TODO 3. Participación de cada grupo",
+     body:`<p>Completa el numerador y el denominador del porcentaje. Luego interpreta solo las filas de subtotal por servicio.</p>`,
+     checks:[["% en la fila de total general",100]],
+     hints:["El numerador es la cantidad de viajes del grupo; el denominador, la cantidad total de viajes de toda la tabla. Ambos se escriben con la misma función.","Si sumas los porcentajes de las 11 filas no obtienes 100 %: cada viaje aparece en su fila de detalle, en un subtotal por distrito, en un subtotal por servicio y en el total general. Lo estarías contando cuatro veces."]}
+  ],
+  quiz:[
+    {q:"En un resultado con ROLLUP, ves una fila con NULL en Mes. ¿Cómo sabes si es un subtotal o un dato ausente?",
+     o:["Siempre es un subtotal: ROLLUP no deja pasar NULL del dato","Con GROUPING(Mes): devuelve 1 si el NULL lo generó la agregación","Con ISNULL(Mes, 0): si devuelve 0, es un subtotal","No se puede saber sin mirar la tabla de origen"],
+     a:1, e:"GROUPING distingue el origen del NULL. ISNULL solo reemplaza el valor, sin decir de dónde vino."},
+    {q:"¿Qué niveles genera GROUP BY ROLLUP (Anio, Mes)?",
+     o:["(Anio, Mes), (Anio) y ()","(Anio, Mes), (Anio), (Mes) y ()","Solo (Anio, Mes)","(Mes) y ()"],
+     a:0, e:"ROLLUP quita columnas de derecha a izquierda. La combinación (Mes) sola solo aparece con CUBE."},
+    {q:"Necesitas el importe por mes, el importe por servicio y el total, sin el cruce mes × servicio. ¿Qué usas?",
+     o:["CUBE (Mes, Servicio)","ROLLUP (Mes, Servicio)","GROUPING SETS ((Mes), (Servicio), ())","GROUP BY Mes, Servicio"],
+     a:2, e:"GROUPING SETS te deja pedir exactamente los niveles que necesitas, sin generar combinaciones de más."}
+  ]
+},
+{
+  id:"ej02", name:"Ejercicio 02", sub:"6.1 · Cubo y reporte paginado",
+  title:"Cubo y reporte paginado",
+  objective:"Cada pregunta nueva en SQL exige reescribir una consulta. Vas a publicar la misma información de dos formas: un cubo para que la gerencia explore por sí misma, y un reporte paginado para que la operación imprima el detalle por distrito.",
+  steps:[
+    {id:"e2p1a", title:"Paso 1. Crear el proyecto y el origen de datos",
+     body:`<ul>
+      <li>En Visual Studio, crea un proyecto <b>Analysis Services Multidimensional</b>.</li>
+      <li>En <b>Orígenes de datos</b>, crea una conexión a <code>MoviTrackTema05_Practica</code>. Proveedor: <i>OLE DB nativo → Microsoft OLE DB Driver for SQL Server</i>. Usa el mismo nombre de instancia que en SSMS y <i>Autenticación de Windows</i>.</li>
+      <li>Pulsa <b>Probar conexión</b> y continúa solo si aparece «Se probó correctamente la conexión».</li></ul>`,
+     trouble:[
+      ["La prueba de conexión falla","Copia el nombre del servidor exactamente como aparece en la ventana de conexión de SSMS (por ejemplo <code>.\\SQLEXPRESS</code> o <code>NOMBRE-PC</code>). Si usas otro proveedor distinto al indicado, vuelve a elegir <i>Microsoft OLE DB Driver for SQL Server</i>."],
+      ["En Información de suplantación no sé qué elegir","Para el laboratorio, <i>Usar la cuenta de servicio</i> suele funcionar si Analysis Services corre en tu misma máquina. Si al procesar aparece un error de inicio de sesión, cambia a <i>Usar un nombre de usuario y contraseña de Windows</i> con tu cuenta."]
+     ]},
+    {id:"e2p1b", title:"Paso 1. Crear la vista del origen de datos",
+     body:`<p>Agrega <code>FactViajeE04</code> y las tres dimensiones. Comprueba que aparecen tres líneas de relación, una desde cada dimensión hacia el hecho.</p>
+     <p class="why">La herramienta espera exactamente un esquema en estrella. Las claves foráneas que definiste en el Tema 05 son las que dibujan estas relaciones sin que tengas que hacer nada.</p>`,
+     checks:[["Relaciones detectadas",3]],
+     trouble:[["No aparecen las relaciones","Las tablas no tienen claves foráneas definidas en SQL Server. Ejecuta el script de recuperación del Tema 06 o créalas a mano arrastrando la columna clave del hecho hacia la dimensión en el diagrama."]]},
+    {id:"e2p2a", todo:true, title:"Paso 2. Dimensión Fecha y TODO 1: jerarquía Año-Mes",
+     body:`<ul><li>En <b>Dimensiones → Nueva dimensión</b>, usa <code>DimFechaE02</code> con <code>FechaKey</code> como clave. Incluye <code>Anio</code> y <code>Mes</code>.</li>
+     <li>En <b>Estructura de dimensión</b>, crea una jerarquía llamada <b>Año-Mes</b>: Anio arriba, Mes debajo.</li></ul>`,
+     hints:["Arrastra Anio desde el panel Atributos hasta el panel Jerarquías. Luego arrastra Mes justo debajo de Anio, dentro de la misma caja.","Para renombrarla, haz clic derecho sobre el encabezado de la caja («Jerarquía») y elige Cambiar nombre."],
+     trouble:[
+      ["Aparece un triángulo de advertencia en la jerarquía","Es el aviso de relaciones de atributo. No impide terminar el TODO. Para resolverlo: en la pestaña <i>Relaciones de atributo</i>, arma la cadena <b>Fecha Key → Mes → Anio</b>."],
+      ["Al crear la relación Mes → Anio, los meses de años distintos se mezclan","El número de mes (1 a 12) se repite cada año. Selecciona el atributo Mes, abre <b>KeyColumns</b> y agrega <b>Anio y Mes</b> en ese orden. Luego asigna <b>NameColumn = Mes</b>: con clave compuesta es obligatorio."],
+      ["¿Flexible o Rigid?","Para fechas usa <b>Rigid</b>: un día nunca cambia de mes ni un mes de año. Selecciona cada relación en el panel inferior y cambia <i>RelationshipType</i>. La punta de la flecha pasa de hueca a rellena."]
+     ]},
+    {id:"e2p2b", title:"Paso 2. Dimensiones Servicio y Ubicación",
+     body:`<ul><li>Desde <code>DimServicioE02</code>: clave <code>ServicioKey</code>, atributo <code>Servicio</code>.</li>
+     <li>Desde <code>DimUbicacionE02</code>: clave <code>UbicacionKey</code>, atributo <code>Distrito</code>.</li></ul>
+     <p>Al terminar cada una, verifica que el atributo aparece en el panel <b>Atributos</b>.</p>`},
+    {id:"e2p2c", title:"Paso 2. Cubo y medidas",
+     body:`<p>En <b>Cubos → Nuevo cubo</b>, usa las tablas existentes. Selecciona <code>FactViajeE04</code> como tabla de hechos y agrega las tres dimensiones. Renombra las medidas:</p>
+     <ul><li><b>CantidadViajes</b>: recuento de filas de FactViajeE04.</li><li><b>ImporteTotal</b>: suma de FactViajeE04.Importe.</li></ul>`,
+     checks:[["Dimensiones en el proyecto",3],["Medidas en el cubo",2]],
+     trouble:[["Cambié el nombre de la medida, pero en el código sigue el nombre anterior","Es normal. Cada objeto tiene un <b>ID</b> que se fija al crearlo y no cambia, y un <b>Name</b> que es el que ves. Por ejemplo, ImporteTotal puede tener ID «Importe». En las consultas se usa el Name."]]},
+    {id:"e2p3a", title:"Paso 3. Implementar y procesar",
+     body:`<ul><li>Clic derecho en el <b>proyecto</b> (el nodo en negrita) → <b>Implementar</b>. Espera «Implementación completa -- 0 errores».</li>
+     <li>Clic derecho en <b>CuboViajes.cube</b> → <b>Procesar…</b> → <b>Ejecutar</b>. Espera «Proceso finalizado correctamente».</li></ul>`,
+     trouble:[
+      ["No encuentro Implementar en el menú del cubo","Implementar está en el menú del <b>proyecto</b>, no del cubo. También puedes ir directo a Procesar: si Visual Studio pregunta si quieres compilar e implementar primero, responde Sí."],
+      ["Las opciones del menú aparecen repetidas (Procesar, Examinar…)","Es un fallo visual de la extensión. Cualquiera de las entradas funciona igual. Si te molesta, revisa que no haya dos versiones de la extensión instaladas."],
+      ["Aparece el aviso amarillo «deshabilitar la extensión puede ayudar»","No la deshabilites: sin ella el proyecto deja de abrir. Pulsa <i>No volver a notificar esta extensión</i>."],
+      ["La dimensión sigue en ProcessingState = Unprocessed","No la procesaste o la implementación no llegó al servidor. Procesa el cubo (procesa también sus dimensiones) o clic derecho en la dimensión → Procesar."]
+     ]},
+    {id:"e2p3b", title:"Paso 3. Explorar en Excel",
+     body:`<ul><li>Abre <b>CuboViajes.cube → Explorador</b> y pulsa el icono verde <b>Analizar en Excel</b>.</li>
+     <li>En <i>Campos de tabla dinámica</i>, marca <b>CantidadViajes</b> e <b>ImporteTotal</b>.</li>
+     <li>Marca la jerarquía <b>Año-Mes</b> (va a Filas) y arrastra <b>Distrito</b> a Columnas.</li></ul>
+     <p class="why">¿Por qué Excel y no el Explorador de Visual Studio? Porque el Explorador es un diseñador de consultas con grilla plana: muestra Anio y Mes como columnas lado a lado, sin botones para expandir. La tabla dinámica sí permite recorrer la jerarquía.</p>`,
+     checks:[["Total general · viajes",6],["Total general · importe",120],["Mes 9 · viajes",4],["Mes 10 · importe",55]],
+     trouble:[
+      ["No aparece el «+» junto al año","Revisa que marcaste la casilla de <b>Año-Mes</b> y no los campos sueltos Anio o Mes de <i>Más campos</i>, que producen una lista plana. Si aun así no aparece: <i>Analizar tabla dinámica → Mostrar → Botones +/-</i>."],
+      ["El importe sale como 120 y no 120.00","La medida no tiene formato definido. Es el mismo valor. Si quieres dos decimales, asigna <code>FormatString = #,##0.00</code> a ImporteTotal y vuelve a implementar."],
+      ["No aparece el botón Analizar en Excel","Necesitas Excel de escritorio instalado en la misma PC. Como alternativa, en Excel: <i>Datos → Obtener datos → De base de datos → De Analysis Services</i>."]
+     ]},
+    {id:"e2p3c", title:"Paso 3. Drill-down, roll-up, slice, dice y pivot",
+     body:`<ol>
+      <li>Pulsa <b>+</b> junto a 2026 para ver los meses: <b>drill-down</b>. Pulsa <b>−</b> para volver al año: <b>roll-up</b>.</li>
+      <li>Arrastra <b>Servicio</b> a Filtros y elige un servicio: <b>slice</b> (fijas una dimensión en un valor).</li>
+      <li>Con ese filtro activo, elige además dos distritos desde la flecha de Etiquetas de columna: <b>dice</b> (restringes dos o más dimensiones a la vez). Luego regresa ambos filtros a (Todos).</li>
+      <li>Mueve Año-Mes a Columnas y Distrito a Filas: <b>pivot</b>. Comprueba que el total general no cambia y devuelve los campos a su lugar.</li></ol>
+     <p class="why">El cubo no inventa números. Sin filtros, el total debe ser 6 viajes y 120.00, igual que el <code>GROUP BY ROLLUP (Anio, Mes)</code> del Ejercicio 01. Lo que cambia es la facilidad para recorrerlos.</p>`},
+    {id:"e2p4", todo:true, title:"Paso 4. Reporte paginado y TODO 2",
+     body:`<p>En Report Builder, crea el conjunto de datos con la consulta del TODO 2: una fila por viaje, con código, fecha, servicio, distrito e importe, filtrada por el parámetro de distrito. En el pie del reporte agrega el número de viajes y la suma del importe.</p>`,
+     checks:[["Comas · viajes en el reporte",3],["Comas · total al pie",65]],
+     hints:["Cada columna viene del alias de su dimensión: <code>t.</code> para fecha, <code>s.</code> para servicio y <code>u.</code> para distrito. El parámetro se escribe con arroba.","Revisa los nombres de columna en el Explorador de objetos de SSMS. En el pie usa las funciones de agregado del reporte (Count y Sum) sobre los campos del conjunto de datos, no un GROUP BY."],
+     trouble:[
+      ["Report Builder no me pide el distrito al ejecutar","Revisa que el WHERE use exactamente el parámetro con arroba. Report Builder crea el parámetro automáticamente al detectar la arroba en la consulta."],
+      ["El reporte muestra una sola fila con el total","Agrupaste en la consulta. Quita cualquier GROUP BY: cada fila debe ser un viaje, y el total se calcula en el pie."]
+     ]}
+  ],
+  quiz:[
+    {q:"Estás viendo viajes por año y abres 2026 para ver sus meses. ¿Qué operación hiciste?",
+     o:["Roll-up","Drill-down","Slice","Pivot"], a:1, e:"Bajas de un nivel agregado (año) a uno más detallado (mes)."},
+    {q:"Filtras el cubo a Servicio = EJECUTIVO y además a Distrito ∈ {Comas, Los Olivos}. ¿Qué operación es?",
+     o:["Slice, porque aplicaste filtros","Pivot, porque cruzas dos dimensiones","Dice, porque restringes dos dimensiones a la vez","Drill-down"], a:2, e:"Slice fija una dimensión. Restringir dos o más a la vez produce un subcubo: eso es dice."},
+    {q:"Mueves Distrito de Columnas a Filas y Año-Mes de Filas a Columnas. ¿Qué cambia en los números?",
+     o:["Nada: solo cambia la orientación (pivot)","El total general se recalcula por distrito","Se pierden los subtotales por año","Se aplican los filtros al revés"], a:0, e:"Pivot rota los ejes. Los datos y los totales son los mismos."},
+    {q:"¿Cuándo conviene el reporte paginado en lugar del cubo?",
+     o:["Cuando la gerencia quiere explorar libremente","Cuando la operación necesita un detalle con formato fijo para imprimir o archivar","Cuando hay muchos datos","Nunca, el cubo lo reemplaza"], a:1, e:"El reporte paginado es para operar: formato fijo, parámetros, impresión. El cubo es para explorar."}
+  ]
+},
+{
+  id:"ej03", name:"Ejercicio 03", sub:"6.2 · Indicadores y dashboard",
+  title:"Indicadores clave y dashboard",
+  objective:"La dirección quiere saber dónde y cuándo se concentra la operación, cuánto factura en promedio cada viaje y qué peso tiene cada servicio. Vas a convertir esas preguntas en indicadores con fórmula explícita.",
+  steps:[
+    {id:"e3p1", title:"Paso 1. Conectar y verificar el modelo",
+     body:`<ul><li>Power BI Desktop → <b>Obtener datos → Base de datos SQL Server</b>, modo <b>Importar</b>.</li>
+     <li>Selecciona solo <code>FactViajeE04</code>, <code>DimFechaE02</code>, <code>DimServicioE02</code> y <code>DimUbicacionE02</code>.</li>
+     <li>En la vista <b>Modelo</b>, cada relación debe ir de la dimensión al hecho, uno a varios, con filtro simple.</li></ul>
+     <p class="why">No traigas las tablas de staging ni de rechazados: pertenecen al ETL, no al modelo analítico, y confunden las relaciones.</p>`,
+     checks:[["Tablas importadas",4],["Relaciones uno a varios",3]]},
+    {id:"e3p2", title:"Paso 2. Medidas base",
+     body:`<pre><code>Viajes = COUNTROWS(FactViajeE04)
+Importe total = SUM(FactViajeE04[Importe])</code></pre>`,
+     checks:[["Viajes",6],["Importe total",120]]},
+    {id:"e3p3", title:"Paso 3. Medida de promedio",
+     body:`<pre><code>Importe promedio por viaje = DIVIDE([Importe total], [Viajes])</code></pre>
+     <p class="why">DIVIDE devuelve un valor controlado cuando el denominador es cero, en lugar de un error.</p>`,
+     checks:[["Importe promedio general",20]]},
+    {id:"e3t1", todo:true, title:"TODO 1. Participación de cada servicio",
+     body:`<p>Completa la función dentro de <code>CALCULATE</code> que quita el filtro de la dimensión de servicio, para que el denominador sea el importe de todos los servicios. Luego dale formato de porcentaje.</p>`,
+     checks:[["ESTANDAR %",50],["EJECUTIVO %",29.17],["ENCOMIENDA %",20.83]],
+     hints:["El nombre de la función, en inglés, significa «todo». Quita todos los filtros de la tabla que le pases.","Es ALL(DimServicioE02). Dentro de CALCULATE, reemplaza el filtro del servicio actual por «todos los servicios»."],
+     trouble:[["Las tres filas muestran 100 %","El filtro no se está quitando: el denominador calcula el mismo servicio que el numerador. Revisa que la función esté dentro de CALCULATE y que reciba la tabla DimServicioE02."]]},
+    {id:"e3t2", todo:true, title:"TODO 2. Armar y titular el dashboard",
+     body:`<p>Construye los tres visuales en una sola página: viajes por distrito y mes, importe promedio por viaje y participación por servicio.</p>
+     <p class="why">Cada título debe enunciar la pregunta que responde. «Suma de Importe» no le dice nada a la dirección; «¿Qué servicio aporta más ingresos?» sí.</p>`,
+     hints:["Escribe el título como la pregunta de negocio de la tabla de KPI de la guía.","Selecciona el visual → Formato → Título → Texto, y escribe la pregunta."]},
+    {id:"e3t3", todo:true, title:"TODO 3. Razonamiento: ¿por qué no guardar el promedio?",
+     body:`<p>Responde en un cuadro de texto del informe: ¿qué pasaría si el promedio fuera una columna más de FactViajeE04 y el usuario filtrara un distrito?</p>`,
+     hints:["Piensa qué hace Power BI con una columna numérica cuando filtras: la suma. ¿Tiene sentido sumar promedios?","Relaciónalo con el Tema 05: el importe es aditivo (se puede sumar en cualquier dimensión); el promedio no lo es. Por eso se calcula al consultar, dividiendo dos sumas."]}
+  ],
+  quiz:[
+    {q:"¿Por qué usar DIVIDE([A],[B]) en lugar de [A]/[B]?",
+     o:["Es más rápido","Controla la división entre cero sin devolver error","Redondea automáticamente","Solo funciona con enteros"], a:1, e:"Si B es cero o está vacío, DIVIDE devuelve BLANK o el valor alternativo que indiques."},
+    {q:"Tu medida de participación da 100 % en todas las filas. ¿Qué pasa?",
+     o:["El formato está mal","El denominador conserva el filtro del servicio actual","Faltan datos en FactViajeE04","La relación es de varios a varios"], a:1, e:"Sin ALL, el denominador se calcula en el mismo contexto que el numerador: A/A = 100 %."},
+    {q:"¿Cuál de estas medidas es aditiva?",
+     o:["Importe promedio por viaje","Participación por servicio %","Importe total","Tasa de aceptación"], a:2, e:"Solo el importe total se puede sumar a través de cualquier dimensión. Promedios y porcentajes deben recalcularse."}
+  ]
+},
+{
+  id:"ej04", name:"Ejercicio 04", sub:"6.3 y 6.4 · Gobernanza y seguridad",
+  title:"Metadatos, calidad y seguridad analítica",
+  objective:"Auditoría pregunta quién responde por cada indicador, qué tan confiables son sus datos y por qué cualquier analista ve todos los distritos. Vas a convertir un número en pantalla en un activo documentado, medido y protegido.",
+  steps:[
+    {id:"e4a", todo:true, title:"Parte A. TODO 1: diccionario de indicadores",
+     body:`<p>Completa la tabla con fuente, fórmula, responsable y criterio de calidad de los tres KPI.</p>`,
+     hints:["El responsable es un rol concreto que respondería si el número está mal (por ejemplo, un jefe de operaciones), no un área genérica.","El criterio de calidad debe poder verificarse con un número: por ejemplo, un porcentaje mínimo de aceptación en la carga, o que el total cuadre con el Paso 0."]},
+    {id:"e4b1", title:"Parte B. Paso 1: tasa de aceptación de la carga",
+     body:`<p>Ejecuta la consulta sobre las tablas de staging, válidos y rechazados.</p>
+     <p class="why">Cuatro de cada diez registros no llegaron al análisis, pero el dashboard muestra 120.00 como si nada. Un indicador puede ser técnicamente correcto y poco confiable a la vez.</p>`,
+     checks:[["Recibidos",10],["Aceptados",6],["Rechazados",4],["Tasa de aceptación %",60]]},
+    {id:"e4b2", todo:true, title:"Parte B. TODO 2: rechazos por motivo",
+     body:`<p>Agrupa <code>dbo.ViajeRechazadoE03</code> por la columna que guarda la explicación del rechazo y cuenta los registros de cada motivo.</p>`,
+     checks:[["Motivos distintos",4]],
+     hints:["Expande la tabla en el Explorador de objetos de SSMS → Columnas para encontrar el nombre exacto de la columna del motivo.","La columna del motivo va en el SELECT, en el GROUP BY y en el ORDER BY. Para contar, usa la misma función del Ejercicio 01."],
+     trouble:[["Un motivo aparece repetido o hay menos de cuatro","Revisa en el Tema 05 el orden de las validaciones: si un registro cumplía dos condiciones de rechazo, debió quedarse con la primera que falló."]]},
+    {id:"e4c", todo:true, title:"Parte C. Seguridad a nivel de fila y TODO 3",
+     body:`<ul><li>Power BI → <b>Modelado → Administrar roles</b>. Crea el rol <b>Analista Comas</b>.</li>
+     <li>Sobre <code>DimUbicacionE02</code>, aplica el filtro <code>[Distrito] = "Comas"</code>.</li>
+     <li>Usa <b>Ver como</b> para comprobar qué muestra el dashboard con ese rol.</li></ul>`,
+     checks:[["Viajes con el rol",3],["Importe con el rol",65],["Promedio con el rol",21.67]],
+     hints:["Los totales bajan de forma evidente. Fíjate en el que no baja, sino que cambia.","El promedio pasa de 20.00 a 21.67. Un analista que no sabe que ve datos filtrados podría creer que el promedio general subió."]},
+    {id:"e4d", todo:true, title:"Parte D. TODO 4: desgloses que dejan de ser anónimos",
+     body:`<p>Agrupa por distrito y servicio, cuenta los viajes y deja solo las combinaciones con menos de 2 viajes. Cada fila que aparezca es un desglose donde el indicador identifica una operación concreta.</p>`,
+     hints:["Para filtrar grupos (no filas) se usa una cláusula distinta de WHERE, que va después del GROUP BY.","Es HAVING COUNT(*) &lt; 2. Luego propón una medida: agrupar distritos pequeños, suprimir celdas con menos de k registros, etc., y escribe qué información se pierde."]}
+  ],
+  quiz:[
+    {q:"El servidor SQL tiene roles bien configurados. ¿Por qué igual hace falta seguridad en Power BI?",
+     o:["Porque Power BI no se conecta a SQL Server","Porque el archivo con datos importados viaja con ellos, y los permisos del servidor no lo acompañan","Porque los roles de SQL expiran","No hace falta"], a:1, e:"En modo Importar los datos quedan dentro del archivo. La seguridad debe replicarse en la capa analítica."},
+    {q:"Con el rol Analista Comas activo, ¿qué indicador es más fácil de malinterpretar?",
+     o:["Viajes","Importe total","Importe promedio por viaje","Número de distritos"], a:2, e:"Los totales bajan de forma obvia. El promedio cambia (20.00 → 21.67) y puede parecer una mejora real."},
+    {q:"Un distrito tiene un solo viaje. ¿Cuál es el riesgo de mostrar su importe promedio?",
+     o:["Ninguno, es un agregado","El promedio es el dato de una operación concreta y permite reidentificarla","El promedio sale en cero","Power BI no lo muestra"], a:1, e:"Un agregado de un solo registro deja de ser anónimo."}
+  ]
+},
+{
+  id:"cierre", name:"Cierre", sub:"Evidencias y reflexión", kind:"close"
+}
+];
+
+const EVIDENCE = [
+  ["ev1","E01: capturas de los Pasos 2 y 3, TODO 1 ejecutado y comentarios de los TODO 2 y 3 en el script"],
+  ["ev2","E02: estructura del cubo, tabla dinámica con un año expandido, archivo Reporte_Viajes_Por_Distrito.rdl y reporte filtrado por Comas"],
+  ["ev3","E03: vista Modelo, las cuatro medidas, dashboard con los tres KPI titulados, razonamiento del TODO 3 y archivo .pbix"],
+  ["ev4","E04: diccionario completo, tasa de aceptación, motivos de rechazo, capturas con y sin rol, y consulta del TODO 4 con la medida propuesta"]
+];
+const REFLECT = [
+  "¿Qué diferencia hay entre una fila de subtotal y una fila con un dato ausente, y por qué importa distinguirlas?",
+  "¿Qué ventaja tiene un modelo analítico frente a consultar directamente el sistema transaccional?",
+  "¿Cuándo conviene un reporte paginado y cuándo un dashboard?",
+  "¿Por qué un promedio o un porcentaje no se almacenan en la tabla de hechos?",
+  "¿Cómo influye una buena definición de metadatos en el tiempo de desarrollo de un reporte nuevo?",
+  "¿Por qué los roles del motor de base de datos no protegen un archivo de dashboard ya distribuido?"
+];
+
+/* ---------- Estado ---------- */
+const KEY = "movitrack-tema06-v1";
+let S = {section:"inicio", done:{}, hints:{}, vals:{}, quiz:{}, ev:{}, notes:{}};
+try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+/* ---------- Utilidades ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function parseNum(v){
+  if(v==null) return NaN;
+  let s = String(v).trim().replace(/%/g,"").replace(/\s/g,"");
+  if(!s) return NaN;
+  if(s.includes(",") && s.includes(".")) s = s.replace(/,/g,"");
+  else s = s.replace(",",".");
+  return parseFloat(s);
+}
+const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="#FDBA30" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+function sectionSteps(sec){ return sec.steps ? sec.steps.map(s=>s.id) : []; }
+function sectionPct(sec){
+  if(sec.kind==="intro") return S.done["intro-read"] ? 100 : 0;
+  if(sec.kind==="close"){ const n = EVIDENCE.filter(e=>S.ev[e[0]]).length; return Math.round(n/EVIDENCE.length*100); }
+  const ids = sectionSteps(sec); if(!ids.length) return 0;
+  return Math.round(ids.filter(i=>S.done[i]).length/ids.length*100);
+}
+function totalPct(){
+  let all=0, done=0;
+  SECTIONS.forEach(sec=>{
+    if(sec.kind==="intro"){ all++; if(S.done["intro-read"]) done++; }
+    else if(sec.kind==="close"){ all+=EVIDENCE.length; done+=EVIDENCE.filter(e=>S.ev[e[0]]).length; }
+    else { const ids=sectionSteps(sec); all+=ids.length; done+=ids.filter(i=>S.done[i]).length; }
+  });
+  return all? Math.round(done/all*100):0;
+}
+
+/* ---------- Navegación ---------- */
+function renderRail(){
+  $("#railList").innerHTML = SECTIONS.map(sec=>{
+    const p = sectionPct(sec);
+    return `<li><button type="button" data-go="${sec.id}" aria-current="${S.section===sec.id}">
+      <span class="nm">${esc(sec.name)}</span><span class="pc ${p===100?'full':''}">${p===100?'✓':p+' %'}</span>
+      <span class="sub">${esc(sec.sub)}</span></button></li>`;
+  }).join("");
+  const t = totalPct();
+  $("#meterFill").style.width = t+"%"; $("#meterTxt").textContent = t+" %";
+}
+function go(id, focus=true){
+  S.section = id; save(); renderRail(); renderPage();
+  if(focus){ window.scrollTo({top:0,behavior:"smooth"}); $("#page").focus({preventScroll:true}); }
+}
+function pager(){
+  const i = SECTIONS.findIndex(s=>s.id===S.section);
+  const prev = SECTIONS[i-1], next = SECTIONS[i+1];
+  return `<div class="pager">${prev?`<button class="btn" data-go="${prev.id}">Volver a ${esc(prev.name)}</button>`:'<span></span>'}
+  ${next?`<button class="btn primary" data-go="${next.id}">Continuar con ${esc(next.name)}</button>`:'<span></span>'}</div>`;
+}
+
+/* ---------- Páginas ---------- */
+function renderIntro(){
+  return `<p class="kicker">Tema 06 · Análisis y visualización de datos empresariales</p>
+  <h1>El Tema 05 construyó el almacén. Hoy lo haces hablar.</h1>
+  <p class="lead">Durante la semana pasada definiste el grano, separaste hechos de dimensiones y cargaste los viajes de MoviTrack con validación. Ese trabajo solo tiene sentido si alguien lo usa para decidir. El Tema 06 no construye datos: los explota.</p>
+
+  <div class="anchors" aria-label="Números de referencia">
+    <div><strong>6</strong><span>viajes</span></div>
+    <div><strong>120.00</strong><span>importe total</span></div>
+    <div><strong>3</strong><span>servicios</span></div>
+    <div><strong>3</strong><span>ubicaciones</span></div>
+  </div>
+  <p>Estos cuatro números son tu ancla. Todo lo que construyas hoy, desde una consulta ROLLUP hasta un dashboard con seguridad, debe cuadrar con ellos. Si algo no cuadra, el error está en lo que construiste, no en los datos.</p>
+
+  <h2>Por qué este tema viene justo después</h2>
+  <div class="bridge">
+    <div><h3>Tema 05: construir</h3><ul><li>Grano: un viaje</li><li>Hechos y dimensiones</li><li>Modelo estrella</li><li>Carga incremental con rechazos</li></ul></div>
+    <div class="arrow" aria-hidden="true">⟶</div>
+    <div><h3>Tema 06: explotar</h3><ul><li>Recorrer niveles (OLAP)</li><li>Publicar cubo y reporte</li><li>Definir indicadores</li><li>Documentarlos y protegerlos</li></ul></div>
+  </div>
+  <p>La gerencia de MoviTrack no quiere escribir SQL: quiere preguntar «¿dónde se concentra la operación?» y obtener una respuesta. Pero una respuesta rápida no basta. Auditoría también preguntará de dónde sale cada número, qué tan confiable es y quién puede verlo. Por eso el tema no termina en el dashboard: termina en la gobernanza y la seguridad.</p>
+
+  <h2>La ruta de hoy</h2>
+  <div class="route-wrap"><table class="route">
+    <thead><tr><th>Ejercicio</th><th>Qué harás</th><th>Herramienta</th><th>Subtema</th></tr></thead>
+    <tbody>
+      <tr><td>01</td><td>Agregar en varios niveles con ROLLUP, CUBE y GROUPING SETS</td><td>SSMS</td><td>6.1</td></tr>
+      <tr><td>02</td><td>Publicar un cubo, recorrerlo y crear un reporte paginado</td><td>Visual Studio, Excel, Report Builder</td><td>6.1</td></tr>
+      <tr><td>03</td><td>Convertir preguntas en indicadores y armar un dashboard</td><td>Power BI Desktop</td><td>6.2</td></tr>
+      <tr><td>04</td><td>Documentar, medir la calidad y proteger los indicadores</td><td>SSMS, Power BI Desktop</td><td>6.3 y 6.4</td></tr>
+    </tbody></table></div>
+  <p class="why">El Ejercicio 02 es el más largo porque combina tres herramientas. Reserva tiempo para él y usa la sección «Si algo falla» de cada paso: ahí están los tropiezos más comunes con Analysis Services.</p>
+
+  <h2>Cómo usar este compañero</h2>
+  <ol class="howto">
+    <li>Trabaja con la guía abierta al lado. Aquí no está el código completo: está lo que necesitas para avanzar sin trabarte.</li>
+    <li>Cuando termines un paso, márcalo en el margen rojo.</li>
+    <li>Si el paso tiene recuadro de verificación, escribe los valores que obtuviste y pulsa <b>Comprobar</b>. Acepta 120, 120.00 o 120,00.</li>
+    <li>Si te trabas, pide una pista. La primera te orienta; la segunda casi te da la respuesta, así que úsala después de intentar.</li>
+    <li>Al final de cada ejercicio hay una autoevaluación corta para comprobar que entendiste el porqué, no solo el cómo.</li>
+  </ol>
+  <div class="tools"><button class="btn primary" type="button" id="introOk">${S.done["intro-read"]?"Leído ✓":"Entendido, empezar"}</button></div>`;
+}
+
+function stepHTML(st){
+  const done = !!S.done[st.id];
+  const nh = S.hints[st.id]||0;
+  let h = `<article class="step ${done?'done':''}" id="step-${st.id}">
+    <button class="tick" type="button" data-tick="${st.id}" aria-pressed="${done}" aria-label="Marcar como terminado: ${esc(st.title)}">${TICK}</button>
+    <div class="step-head">${st.todo?'<span class="tag todo">TODO</span>':''}<h3>${esc(st.title)}</h3></div>
+    <div class="step-body">${st.body}</div>`;
+  if(st.checks){
+    h += `<div class="panel"><h4>Verifica tus resultados</h4><div class="checks">`+
+      st.checks.map((c,i)=>{ const k=st.id+"-"+i; const v=S.vals[k]??""; return `<label>${esc(c[0])}<input inputmode="decimal" data-val="${k}" value="${esc(v)}" autocomplete="off"></label>`;}).join("")+
+      `</div><div class="tools"><button class="btn primary" type="button" data-check="${st.id}">Comprobar</button></div><div class="feedback" id="fb-${st.id}" role="status" aria-live="polite"></div></div>`;
+  }
+  if(st.hints){
+    h += `<div id="hints-${st.id}">`+ st.hints.slice(0,nh).map((t,i)=>`<div class="hint"><b>Pista ${i+1} de ${st.hints.length}</b>${t}</div>`).join("") +`</div>
+      <div class="tools"><button class="btn" type="button" data-hint="${st.id}" ${nh>=st.hints.length?'disabled':''}>${nh>=st.hints.length?'Ya viste todas las pistas':(nh===0?'Pedir una pista':'Pedir otra pista')}</button></div>`;
+  }
+  if(st.trouble){
+    h += `<details class="trouble"><summary>Si algo falla (${st.trouble.length})</summary><div class="tb"><dl>`+
+      st.trouble.map(t=>`<dt>${esc(t[0])}</dt><dd>${t[1]}</dd>`).join("")+`</dl></div></details>`;
+  }
+  return h+`</article>`;
+}
+
+function quizHTML(sec){
+  if(!sec.quiz) return "";
+  return `<h2>Autoevaluación</h2><p>Tres o cuatro preguntas para comprobar que entendiste el porqué. No cuentan para la nota.</p><div class="quiz">`+
+    sec.quiz.map((q,qi)=>{
+      const k = sec.id+"-q"+qi; const pick = S.quiz[k];
+      return `<div class="q"><p>${esc(q.q)}</p><div class="opts">`+
+        q.o.map((o,oi)=>{ let cls=""; if(pick!=null){ if(oi===q.a) cls="right"; else if(oi===pick) cls="wrong"; }
+          return `<button type="button" class="opt ${cls}" data-quiz="${k}" data-opt="${oi}" ${pick!=null?'aria-disabled="true"':''}>${esc(o)}</button>`;}).join("")+
+        `</div>${pick!=null?`<p class="explain"><b>${pick===q.a?'Correcto.':'No exactamente.'}</b> ${esc(q.e)}</p>`:''}</div>`;
+    }).join("")+`</div>`;
+}
+
+function renderExercise(sec){
+  const p = sectionPct(sec);
+  return `<p class="kicker">${esc(sec.name)} · ${esc(sec.sub)}</p><h1>${esc(sec.title)}</h1>
+    <div class="objective"><b>Objetivo.</b> ${esc(sec.objective)}</div>
+    <h2>Pasos</h2>`+ sec.steps.map(stepHTML).join("") +
+    `<div class="done-banner ${p===100?'show':''}" id="banner">Terminaste todos los pasos de este ejercicio. Revisa que tienes las evidencias antes de continuar.</div>`+
+    quizHTML(sec) + pager();
+}
+
+function renderClose(){
+  return `<p class="kicker">Cierre</p><h1>Antes de entregar</h1>
+  <p class="lead">Marca cada evidencia cuando la tengas en la carpeta Evidencias-Tema06. Guarda las carpetas completas de los proyectos, no solo las capturas.</p>
+  <h2>Evidencias</h2>`+
+  EVIDENCE.map(e=>{ const d=!!S.ev[e[0]]; return `<article class="step ${d?'done':''}">
+    <button class="tick" type="button" data-ev="${e[0]}" aria-pressed="${d}" aria-label="Marcar evidencia">${TICK}</button>
+    <div class="step-head"><h3>${esc(e[1])}</h3></div></article>`;}).join("")+
+  `<h2>Reflexión</h2><p>Escribe tus respuestas aquí como borrador; se guardan en este navegador. Luego pásalas a tu entrega.</p><div class="reflect">`+
+  REFLECT.map((q,i)=>`<label for="r${i}">${i+1}. ${esc(q)}</label><textarea id="r${i}" data-note="r${i}">${esc(S.notes["r"+i]||"")}</textarea>`).join("")+
+  `</div><div class="objective" style="margin-top:28px"><b>Transferencia a tu desafío.</b> Aplica estos criterios al dominio de tu propio desafío. No reutilices los indicadores de MoviTrack.</div>`+ pager();
+}
+
+function renderPage(){
+  const sec = SECTIONS.find(s=>s.id===S.section) || SECTIONS[0];
+  let html;
+  if(sec.kind==="intro") html = renderIntro()+pager();
+  else if(sec.kind==="close") html = renderClose();
+  else html = renderExercise(sec);
+  $("#page").innerHTML = html;
+  document.title = `${sec.name} · Tema 06 · Compañero de laboratorio`;
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener("click", ev=>{
+  const t = ev.target.closest("button"); if(!t) return;
+  if(t.dataset.go){ go(t.dataset.go); return; }
+  if(t.id==="introOk"){ S.done["intro-read"]=true; save(); go("entorno"); return; }
+  if(t.dataset.tick){
+    const id=t.dataset.tick; S.done[id]=!S.done[id]; save();
+    const art = $("#step-"+id); art.classList.toggle("done", !!S.done[id]); t.setAttribute("aria-pressed", !!S.done[id]);
+    renderRail(); const sec=SECTIONS.find(s=>s.id===S.section); const b=$("#banner"); if(b) b.classList.toggle("show", sectionPct(sec)===100);
+    return;
+  }
+  if(t.dataset.ev){
+    const id=t.dataset.ev; S.ev[id]=!S.ev[id]; save();
+    t.closest(".step").classList.toggle("done", !!S.ev[id]); t.setAttribute("aria-pressed", !!S.ev[id]); renderRail(); return;
+  }
+  if(t.dataset.hint){
+    const id=t.dataset.hint; const st=findStep(id); const n=(S.hints[id]||0);
+    if(n<st.hints.length){ S.hints[id]=n+1; save();
+      const box=$("#hints-"+id); box.insertAdjacentHTML("beforeend", `<div class="hint"><b>Pista ${n+1} de ${st.hints.length}</b>${st.hints[n]}</div>`);
+      const left = st.hints.length-(n+1);
+      t.textContent = left? "Pedir otra pista":"Ya viste todas las pistas"; if(!left) t.disabled=true;
+    }
+    return;
+  }
+  if(t.dataset.check){
+    const id=t.dataset.check; const st=findStep(id); let ok=0, empty=0;
+    st.checks.forEach((c,i)=>{
+      const inp = document.querySelector(`[data-val="${id}-${i}"]`); const v=parseNum(inp.value);
+      inp.classList.remove("ok","bad");
+      if(isNaN(v)){ empty++; return; }
+      if(Math.abs(v-c[1])<=0.011){ inp.classList.add("ok"); ok++; } else inp.classList.add("bad");
+    });
+    const fb=$("#fb-"+id); const n=st.checks.length;
+    if(ok===n){ fb.className="feedback ok"; fb.textContent="Todo cuadra. Marca el paso como terminado.";
+      if(!S.done[id]){ S.done[id]=true; save(); $("#step-"+id).classList.add("done"); renderRail(); const sec=SECTIONS.find(s=>s.id===S.section); const b=$("#banner"); if(b) b.classList.toggle("show", sectionPct(sec)===100);} }
+    else if(empty===n){ fb.className="feedback bad"; fb.textContent="Escribe los valores que obtuviste antes de comprobar."; }
+    else { fb.className="feedback bad"; fb.textContent=`${ok} de ${n} valores cuadran. Revisa los marcados en rojo`+(st.hints?", o pide una pista.":", y abre «Si algo falla» si lo hay."); }
+    return;
+  }
+  if(t.dataset.quiz){
+    const k=t.dataset.quiz; if(S.quiz[k]!=null) return;
+    S.quiz[k]=+t.dataset.opt; save(); const y=window.scrollY; renderPage(); window.scrollTo(0,y); return;
+  }
+});
+document.addEventListener("input", ev=>{
+  const el=ev.target;
+  if(el.dataset.val){ S.vals[el.dataset.val]=el.value; el.classList.remove("ok","bad"); save(); }
+  if(el.dataset.note){ S.notes[el.dataset.note]=el.value; save(); }
+});
+function findStep(id){ for(const s of SECTIONS){ if(s.steps){ const f=s.steps.find(x=>x.id===id); if(f) return f; } } return null; }
+
+$("#resetBtn").addEventListener("click", ()=>{
+  if(confirm("¿Reiniciar todo tu avance? Se borrarán pasos marcados, valores, respuestas y notas.")){
+    S={section:"inicio",done:{},hints:{},vals:{},quiz:{},ev:{},notes:{}}; save(); go("inicio");
+  }
+});
+$("#themeBtn").addEventListener("click", ()=>{
+  const r=document.documentElement; const cur=r.getAttribute("data-theme");
+  const sysDark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const next = cur ? (cur==="dark"?"light":"dark") : (sysDark?"light":"dark");
+  r.setAttribute("data-theme", next); try{ localStorage.setItem(KEY+"-theme", next);}catch(e){}
+});
+try{ const th=localStorage.getItem(KEY+"-theme"); if(th) document.documentElement.setAttribute("data-theme", th);}catch(e){}
+
+renderRail(); renderPage();
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\CuboViajes.cube||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design",
+      "RelativeMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|solutionrelative:CuboViajes.cube||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Ubicacion E02.dim||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design",
+      "RelativeMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|solutionrelative:Dim Ubicacion E02.dim||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Fecha E02.dim||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design",
+      "RelativeMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|solutionrelative:Dim Fecha E02.dim||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Servicio E02.dim||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design",
+      "RelativeMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|solutionrelative:Dim Servicio E02.dim||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Movi Track Tema05 Practica.dsv||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design",
+      "RelativeMoniker": "D:0:0:{C2719BB5-80F3-B124-7630-9FF914BC42AF}|MoviTrackTema06.dwproj|solutionrelative:Movi Track Tema05 Practica.dsv||{B4191D15-2D32-45F2-906F-E91BBAAA6059}|Design"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CuboViajes.cube [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\CuboViajes.cube",
+              "RelativeDocumentMoniker": "CuboViajes.cube",
+              "ToolTip": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\CuboViajes.cube [Dise\u00F1o]",
+              "RelativeToolTip": "CuboViajes.cube [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-09-23T22:06:47.357Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Dim Ubicacion E02.dim [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Ubicacion E02.dim",
+              "RelativeDocumentMoniker": "Dim Ubicacion E02.dim",
+              "ToolTip": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Ubicacion E02.dim [Dise\u00F1o]",
+              "RelativeToolTip": "Dim Ubicacion E02.dim [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-09-23T21:54:49.66Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Dim Servicio E02.dim [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Servicio E02.dim",
+              "RelativeDocumentMoniker": "Dim Servicio E02.dim",
+              "ToolTip": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Servicio E02.dim [Dise\u00F1o]",
+              "RelativeToolTip": "Dim Servicio E02.dim [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-09-23T21:50:27.922Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Dim Fecha E02.dim [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Fecha E02.dim",
+              "RelativeDocumentMoniker": "Dim Fecha E02.dim",
+              "ToolTip": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Dim Fecha E02.dim [Dise\u00F1o]",
+              "RelativeToolTip": "Dim Fecha E02.dim [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-09-23T21:31:42.332Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Movi Track Tema05 Practica.dsv [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Movi Track Tema05 Practica.dsv",
+              "RelativeDocumentMoniker": "Movi Track Tema05 Practica.dsv",
+              "ToolTip": "D:\\UPN JP\\2026-2\\BASE DE DATOS AVANZADAS Y BIG DATA\\TEMA 06\\MoviTrackTema06\\Movi Track Tema05 Practica.dsv [Dise\u00F1o]",
+              "RelativeToolTip": "Movi Track Tema05 Practica.dsv [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-09-23T21:23:02.921Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "resumen": [
+    {
+      "Region": "Centro",
+      "Registros": 600,
+      "Kilos": "11998.00",
+      "Toneladas": "11.998"
+    },
+    {
+      "Region": "Norte",
+      "Registros": 600,
+      "Kilos": "5998.00",
+      "Toneladas": "5.998"
+    },
+    {
+      "Region": "Sur",
+      "Registros": 600,
+      "Kilos": "17998.00",
+      "Toneladas": "17.998"
+    }
+  ],
+  "estadistica": [
+    {
+      "Region": "Centro",
+      "Jornadas": 200,
+      "MediaVolPorTon": 398.08,
+      "DesvMuestral": 51.38
+    },
+    {
+      "Region": "Norte",
+      "Jornadas": 200,
+      "MediaVolPorTon": 749.9,
+      "DesvMuestral": 213.39
+    },
+    {
+      "Region": "Sur",
+      "Jornadas": 200,
+      "MediaVolPorTon": 295.63,
+      "DesvMuestral": 26.86
+    }
+  ],
+  "ranking": [
+    {
+      "Nombre": "Playa Demo 02",
+      "Region": "Norte",
+      "IndiceMedio": 17.48
+    },
+    {
+      "Nombre": "Playa Demo 03",
+      "Region": "Centro",
+      "IndiceMedio": 20.48
+    },
+    {
+      "Nombre": "Playa Demo 04",
+      "Region": "Centro",
+      "IndiceMedio": 23.48
+    },
+    {
+      "Nombre": "Playa Demo 05",
+      "Region": "Sur",
+      "IndiceMedio": 26.48
+    },
+    {
+      "Nombre": "Playa Demo 06",
+      "Region": "Sur",
+      "IndiceMedio": 30.19
+    }
+  ],
+  "reto": [
+    {
+      "Region": "Centro",
+      "Pesajes": 200,
+      "ToneladasPlastico": "7.900",
+      "PromedioKgPorPesaje": "39.50"
+    },
+    {
+      "Region": "Norte",
+      "Pesajes": 200,
+      "ToneladasPlastico": "3.900",
+      "PromedioKgPorPesaje": "19.50"
+    },
+    {
+      "Region": "Sur",
+      "Pesajes": 200,
+      "ToneladasPlastico": "11.900",
+      "PromedioKgPorPesaje": "59.50"
+    }
+  ],
+  "impacto": [
+    {
+      "Impacto": "Bajo Impacto",
+      "count": 297
+    },
+    {
+      "Impacto": "Alto Impacto",
+      "count": 303
+    }
+  ],
+  "correlacion": 0.6005514350145889
+}

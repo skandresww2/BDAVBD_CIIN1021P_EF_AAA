@@ -1,0 +1,1868 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Simulador Spark Tema 07</title>
+<style>
+/* =====================================================================
+   COLORES Y TEXTOS BASE (el docente puede cambiar estos valores)
+   Diseño de un solo tema claro, pensado para proyectar.
+   Acento UPN: #FDBA30 (siempre con texto negro encima).
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --upn:#FDBA30; --upn-soft:#FFF4D6; --upn-line:#E7A300;
+  --bg:#F3F3F0; --surface:#FFFFFF; --surface-2:#F8F8F5; --ink:#141414; --ink-2:#3B3B38;
+  --muted:#5F5F5A; --line:#DCDBD4; --line-strong:#ADABA2;
+  --concept:#6A1FB8; --concept-bg:#F4EEFC;
+  --info:#0A5F99; --info-bg:#E7F3FB;
+  --ok:#0B7A41; --ok-bg:#E2F3E9; --bad:#B8143A; --bad-bg:#FCE7EB; --warn-bg:#FFF4D6;
+  --code-bg:#1E1E1E; --code-ink:#D4D4D4; --code-kw:#569CD6; --code-fn:#DCDCAA; --code-str:#CE9178;
+  --code-num:#B5CEA8; --code-cm:#6A9955; --code-par:#9CDCFE;
+  /* Series validadas para daltonismo (fondo claro) */
+  --s-norte:#0090D6; --s-centro:#C98A00; --s-sur:#9500FF;
+  --p0:#0090D6; --p1:#C98A00;
+  --f:Arial,"Helvetica Neue",Helvetica,"Liberation Sans",sans-serif;
+  --f-code:Consolas,"Cascadia Mono","SF Mono",Menlo,"Liberation Mono",monospace;
+  --fs:16px;
+}
+:root.proj{--fs:20px}
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.55 var(--f);-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--info);outline-offset:2px}
+h1,h2,h3,h4{line-height:1.2;margin:0;text-wrap:balance}
+p{margin:0 0 .7em;max-width:72ch}
+code{font-family:var(--f-code);font-size:.9em;background:#EEEDE7;padding:.05em .35em;border-radius:3px}
+small{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Cabecera ---------- */
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:#141414;color:#fff;border-bottom:5px solid var(--upn)}
+.hdr-in{display:flex;align-items:center;gap:16px;padding:9px 20px;max-width:1500px;margin:0 auto}
+.brand{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.brand b{font-size:1.02rem}
+.brand b span{color:var(--upn)}
+.brand small{color:#BDBDB6;font-size:.76rem}
+.where{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.where-t{font-size:.84rem;color:#C9C9C2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.where-t b{color:#fff}
+.bar{height:7px;background:#333;border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--upn);transition:width .35s ease}
+.pct{font-weight:700;font-size:.9rem;min-width:3.4em;text-align:right}
+.hbtn{border:1.5px solid #666;background:transparent;color:#fff;border-radius:6px;padding:5px 10px;font-size:.8rem;cursor:pointer;white-space:nowrap}
+.hbtn[aria-pressed="true"]{background:var(--upn);border-color:var(--upn);color:#000;font-weight:700}
+.menu-btn{display:none}
+
+/* ---------- Estructura ---------- */
+.shell{display:grid;grid-template-columns:280px minmax(0,1fr);gap:26px;max-width:1500px;margin:0 auto;padding-block:20px 80px;padding-inline:20px}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px);align-self:start;max-height:calc(100vh - 96px);overflow:auto;padding-right:4px}
+.sess{font-size:.74rem;font-weight:700;color:var(--muted);margin:14px 10px 4px;letter-spacing:.04em}
+.sess:first-child{margin-top:0}
+.mod-btn{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:8px 10px;border-radius:6px;cursor:pointer}
+.mod-btn:hover{background:var(--surface)}
+.mod-n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.78rem;border:2px solid var(--ink)}
+.mod.cur .mod-n{background:var(--upn);border-color:var(--upn-line);color:#000}
+.mod.full .mod-n{background:var(--ink);color:#fff}
+.mod-t{font-weight:700;font-size:.93rem;line-height:1.2}
+.mod-t small{display:block;font-weight:400;font-size:.75rem}
+.mod-p{font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.steps{list-style:none;margin:2px 0 8px 24px;padding:0 0 0 14px;border-left:2px solid var(--line)}
+.steps button{width:100%;text-align:left;border:0;background:none;padding:5px 8px;border-radius:5px;font-size:.85rem;color:var(--ink-2);cursor:pointer;display:flex;gap:8px;align-items:baseline}
+.steps button:hover{background:var(--surface)}
+.steps button[aria-current="true"]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:inset 3px 0 0 var(--upn-line)}
+.dot{flex:none;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line-strong);transform:translateY(1px)}
+.dot.half{background:var(--upn);border-color:var(--upn-line)}
+.dot.done{background:var(--ok);border-color:var(--ok)}
+.rail-foot{font-size:.78rem;color:var(--muted);padding:10px;border-top:1px solid var(--line);margin-top:10px}
+.linkbtn{border:0;background:none;padding:0;color:var(--bad);text-decoration:underline;cursor:pointer;font-size:inherit}
+
+main{min-width:0}
+.screen{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:28px 34px 32px}
+.kicker{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.pill{font-weight:700;border-radius:3px;padding:1px 8px;font-size:.74rem}
+.pill.dark{background:var(--ink);color:#fff}
+.pill.time{background:var(--upn);color:#000}
+.pill.doc{background:var(--concept);color:#fff}
+.screen h1{font-size:clamp(1.5rem,2.5vw,2.1rem);margin-bottom:6px;max-width:34ch}
+.lead{font-size:1.05rem;color:var(--ink-2);margin-bottom:6px}
+.stack{display:flex;flex-direction:column;gap:22px;margin-top:20px}
+
+/* ---------- Secuencia didáctica ---------- */
+.blk{position:relative;border:1px solid var(--line);border-radius:6px;padding:16px 20px 18px;background:var(--surface)}
+.blk>header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.blk>header .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.76rem;font-weight:700;flex:none;background:var(--ink);color:#fff}
+.blk>header .lab{font-size:.76rem;font-weight:700;letter-spacing:.04em;color:var(--muted)}
+.blk>header h3{font-size:1.08rem;margin:0}
+.blk.sit{background:var(--surface-2)}
+.blk.con{background:var(--concept-bg);border-color:transparent}
+.blk.con>header .n{background:var(--concept)}
+.blk.pred{border:2px solid var(--upn-line);background:var(--upn-soft)}
+.blk.pred>header .n{background:var(--upn);color:#000}
+.blk.int{border:2px solid var(--ink)}
+.blk.res{background:var(--ok-bg);border-color:transparent}
+.blk.res>header .n{background:var(--ok)}
+.blk.expl{background:var(--surface-2)}
+.blk.colab{background:#F1F1EC}
+.blk.colab>header .n{background:#3B3B38}
+.blk.doc{border:2px dashed var(--concept);background:var(--concept-bg)}
+.blk.doc>header .n{background:var(--concept)}
+.blk.solved{border-color:var(--ok)!important}
+.blk ul,.blk ol{margin:.2em 0 .8em;padding-left:1.3em;max-width:72ch}
+.blk li{margin:.25em 0}
+details.more{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+details.more summary{cursor:pointer;font-weight:700;color:var(--info);font-size:.92rem}
+details.more[open] summary{margin-bottom:8px}
+.key{margin-top:10px;padding:10px 14px;background:var(--surface);border-left:4px solid var(--upn-line);border-radius:0 5px 5px 0;max-width:76ch}
+.sim-tag{display:inline-block;font-size:.72rem;font-weight:700;border:1.5px solid var(--ink);border-radius:3px;padding:0 6px;margin-bottom:8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+
+/* ---------- Código ---------- */
+.cw{margin:8px 0;border-radius:6px;overflow:hidden;background:var(--code-bg)}
+.cbar{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#2D2D2D;color:#CFCFCF;font-size:.78rem}
+.code{color:var(--code-ink);font:14px/1.6 var(--f-code);padding:12px 16px;margin:0;overflow-x:auto;white-space:pre;tab-size:4}
+:root.proj .code{font-size:17px}
+.code .kw{color:var(--code-kw)} .code .fn{color:var(--code-fn)} .code .st{color:var(--code-str)}
+.code .nm{color:var(--code-num)} .code .cm{color:var(--code-cm)} .code .pa{color:var(--code-par)}
+.code input.blank{font:inherit;background:#333337;color:#FFE08A;border:0;border-bottom:2px solid var(--upn);padding:0 4px;min-width:4ch;border-radius:2px}
+.code input.blank.ok{border-bottom-color:#4EC98A;color:#A8F0C8}
+.code input.blank.bad{border-bottom-color:#FF6B86;color:#FFB3C1}
+.mini{border:1px solid var(--line-strong);background:var(--surface);border-radius:4px;padding:2px 9px;cursor:pointer;font-size:.8rem}
+.cbar .mini{background:#3C3C3C;border-color:#5A5A5A;color:#fff}
+.mini:disabled{opacity:.4;cursor:default}
+
+/* ---------- Tablas ---------- */
+.tw{overflow-x:auto;margin:6px 0}
+table.rs{border-collapse:collapse;font-size:.9rem;min-width:100%}
+table.rs th,table.rs td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+table.rs th{font-size:.78rem;color:var(--muted);border-bottom:2px solid var(--ink)}
+table.rs .n{text-align:right;font-variant-numeric:tabular-nums}
+table.rs tr.tot td{font-weight:700;background:var(--upn-soft)}
+table.rs tr.hl td{background:var(--bad-bg)}
+.null{font-family:var(--f-code);font-size:.8em;background:#ECEBE5;color:var(--muted);padding:1px 6px;border-radius:3px}
+
+/* ---------- Actividades ---------- */
+.q{font-weight:700;margin-bottom:10px;max-width:76ch}
+.opts{display:grid;gap:8px;max-width:780px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--line-strong);background:var(--surface);border-radius:6px;padding:8px 12px;cursor:pointer}
+.opt:hover{border-color:var(--ink)}
+.opt .mk{flex:none;width:18px;height:18px;border:2px solid var(--line-strong);border-radius:50%;margin-top:2px}
+.opt.multi .mk{border-radius:4px}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--upn-soft)}
+.opt[aria-pressed="true"] .mk{background:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 3px var(--surface)}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)} .opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt.ok::after{content:"✓ correcta";margin-left:auto;font-size:.76rem;font-weight:700;color:var(--ok)}
+.opt.bad::after{content:"✕ revisa";margin-left:auto;font-size:.76rem;font-weight:700;color:var(--bad)}
+.grid-m{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:center;max-width:980px}
+.grid-m .it{padding:7px 10px;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;font-size:.93rem}
+select,input.f,textarea{border:1.5px solid var(--line-strong);background:var(--surface);border-radius:6px;padding:7px 10px;width:100%;min-width:0}
+select.ok,input.f.ok,textarea.ok{border-color:var(--ok);background:var(--ok-bg)}
+select.bad,input.f.bad,textarea.bad{border-color:var(--bad);background:var(--bad-bg)}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px 14px;max-width:880px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:.86rem;color:var(--ink-2)}
+.fields.wide{grid-template-columns:1fr}
+textarea{min-height:80px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{border:1.5px solid var(--ink);background:var(--surface);border-radius:6px;padding:7px 14px;font-weight:700;cursor:pointer;font-size:.9rem}
+.btn:hover{background:var(--surface-2)}
+.btn.pri{background:var(--upn);border-color:var(--upn-line);color:#000}
+.btn.ghost{border-color:var(--line-strong)}
+.btn.docb{border-color:var(--concept);color:var(--concept)}
+.btn:disabled{opacity:.45;cursor:default}
+.fb{margin-top:12px;padding:10px 14px;border-radius:6px;max-width:80ch;font-size:.95rem}
+.fb.ok{background:var(--ok-bg);color:var(--ok)}
+.fb.bad{background:var(--bad-bg);color:var(--bad)}
+.fb ul{margin:.3em 0 0;padding-left:1.2em;color:var(--ink)}
+.fb .ttl{font-weight:700}
+.hint{margin-top:10px;padding:10px 14px;border-radius:6px;background:var(--surface);border:1px solid var(--line);max-width:80ch}
+.hint .h,.exp .h,.sol .h{display:block;font-size:.74rem;font-weight:700;margin-bottom:3px}
+.hint .h{color:var(--info)}
+.exp{margin-top:10px;padding:12px 14px;border-radius:6px;background:var(--info-bg);max-width:80ch}
+.sol{margin-top:10px;padding:12px 14px;border-radius:6px;border:2px dashed var(--concept);background:var(--concept-bg);max-width:84ch}
+.sol .h{color:var(--concept)}
+
+/* ---------- Diagramas y simulaciones ---------- */
+figure{margin:6px 0}
+figure svg{display:block;width:100%;height:auto;max-width:100%}
+figcaption{font-size:.84rem;color:var(--muted);margin-top:6px;max-width:76ch}
+.fig-wrap{overflow-x:auto}
+.svgt{font-family:var(--f);fill:currentColor}
+.stage{border:1px solid var(--line);border-radius:6px;background:var(--surface-2);padding:14px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.tab{border:1.5px solid var(--line-strong);background:var(--surface);border-radius:99px;padding:4px 14px;cursor:pointer;font-weight:700;font-size:.86rem}
+.tab[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab:disabled{opacity:.45;cursor:not-allowed}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line-strong);border-radius:99px;padding:3px 11px;font-size:.85rem;background:var(--surface);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.out{font-family:var(--f-code);font-size:.88rem;background:#141414;color:#E9E9E3;border-radius:6px;padding:10px 14px;white-space:pre-wrap;min-height:2.6em}
+.out b{color:var(--upn)}
+
+/* Piezas del entorno */
+.envmap{display:grid;gap:10px}
+.envbox{border:2px solid var(--ink);border-radius:8px;padding:10px 12px;background:var(--surface)}
+.envbox>.t{font-weight:700;font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.envrow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.piece{border:1.5px solid var(--line-strong);border-radius:6px;background:var(--surface-2);padding:7px 12px;cursor:pointer;font-weight:700;font-size:.9rem;text-align:left}
+.piece[aria-pressed="true"]{background:var(--upn);border-color:var(--upn-line);color:#000}
+.piece small{display:block;font-weight:400;color:var(--muted);font-size:.74rem}
+.piece[aria-pressed="true"] small{color:#3a2a00}
+.arrow-r{align-self:center;font-weight:700;color:var(--muted)}
+
+/* Viajes y grupos (E01) */
+.cards{display:flex;flex-wrap:wrap;gap:8px}
+.tcard{border:1.5px solid var(--line-strong);background:var(--surface);border-radius:6px;padding:6px 10px;font-size:.86rem;min-width:118px;transition:transform .3s ease,opacity .3s ease}
+.tcard b{display:block;font-size:.95rem}
+.tcard.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--upn)}
+.tcard.dim{opacity:.35}
+.buckets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.bucket{border:2px dashed var(--line-strong);border-radius:8px;padding:10px;min-height:150px;background:var(--surface)}
+.bucket h4{font-size:.95rem;margin-bottom:6px}
+.bucket .agg{font-family:var(--f-code);font-size:.85rem;margin-top:8px;padding-top:6px;border-top:1px solid var(--line)}
+.colbtn{border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--info);text-decoration:underline dotted;cursor:pointer}
+
+/* RDD (E02) */
+.parts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.part{border:2px solid var(--p0);border-radius:8px;padding:10px;background:var(--surface)}
+.part.p1{border-color:var(--p1)}
+.part h4{font-size:.86rem;margin-bottom:6px;display:flex;justify-content:space-between;gap:8px}
+.tup{display:inline-flex;gap:0;border:1.5px solid var(--line-strong);border-radius:6px;overflow:hidden;margin:3px;background:var(--surface);cursor:pointer;font-family:var(--f-code);font-size:.86rem;padding:0}
+.tup span{padding:4px 8px}
+.tup span+span{border-left:1px solid var(--line)}
+.tup.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--upn)}
+.tup.pass{background:var(--ok-bg);border-color:var(--ok)}
+.tup.drop{opacity:.3}
+.plan{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:44px;padding:8px;border:2px dashed var(--line-strong);border-radius:8px;background:var(--surface)}
+.node{border:1.5px dashed var(--ink);border-radius:6px;padding:4px 10px;font-family:var(--f-code);font-size:.84rem;background:var(--surface-2)}
+.node.run{border-style:solid;background:var(--ok-bg);border-color:var(--ok)}
+.shuffle{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:10px}
+.lanes{display:grid;gap:6px}
+.lane{border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:var(--surface);font-family:var(--f-code);font-size:.84rem}
+
+/* Calidad (E03) */
+.rec{border:1.5px solid var(--line-strong);border-radius:6px;padding:8px 10px;background:var(--surface);font-family:var(--f-code);font-size:.84rem}
+.reccards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.reccard{border:1.5px solid var(--line-strong);border-radius:8px;background:var(--surface);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.reccard .rec{border:0;padding:0}
+.reccard.ok{border-color:var(--ok)} .reccard.bad{border-color:var(--bad)}
+
+/* Gráficos y reporte */
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.82rem;color:var(--ink-2);margin-top:4px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.report{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}
+.tile{border:1px solid var(--line);border-radius:6px;padding:12px;background:var(--surface)}
+.tile h5{margin:0 0 6px;font-size:.95rem}
+.tile.wide{grid-column:1/-1}
+.kpi{font-size:2.3rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:.8rem;color:var(--muted)}
+.funnel{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;align-items:stretch}
+.fstep{border-radius:8px;padding:10px;text-align:center;border:1.5px solid var(--line-strong);background:var(--surface)}
+.fstep strong{display:block;font-size:1.7rem;font-variant-numeric:tabular-nums}
+.fstep span{font-size:.8rem;color:var(--muted)}
+.fstep.y{background:var(--upn-soft);border-color:var(--upn-line)}
+.fstep.g{background:var(--ok-bg);border-color:var(--ok)}
+.fstep.r{background:var(--bad-bg);border-color:var(--bad)}
+.timer{font-family:var(--f-code);font-size:1.6rem;font-weight:700}
+.checkl{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.checkl label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.checkl input{margin-top:4px}
+
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:28px;padding-top:16px;border-top:1px solid var(--line)}
+.medal{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;max-width:760px}
+.medal div{border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--surface-2)}
+.medal b{display:block;font-size:1.6rem;font-variant-numeric:tabular-nums}
+.medal span{font-size:.8rem;color:var(--muted)}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#141414;color:#fff;padding:8px 16px;border-radius:6px;font-size:.88rem;z-index:50}
+
+@media (max-width: 1000px){
+  .shell{grid-template-columns:1fr;gap:14px;padding-inline:14px}
+  .rail{position:static;max-height:none;display:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px}
+  .rail.open{display:block}
+  .menu-btn{display:inline-block}
+  .screen{padding:22px 18px 24px}
+  .report{grid-template-columns:1fr}
+  .grid-m{grid-template-columns:1fr}
+  .grid-m .it{margin-top:6px}
+}
+@media (max-width: 640px){
+  .hdr-in{flex-wrap:wrap;gap:8px 10px;padding:8px 14px}
+  .where{order:3;flex-basis:100%}
+  .brand small{display:none}
+  .buckets,.parts{grid-template-columns:1fr}
+  .shuffle{grid-template-columns:1fr}
+  .hbtn.hide-sm{display:none}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+</style>
+<header class="hdr">
+  <div class="hdr-in">
+    <button class="hbtn menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="rail">Menú</button>
+    <div class="brand"><b>Simulador <span>Spark</span> · Tema 07</b><small>UPN · Base de Datos Avanzadas y Big Data · CIIN1021P</small></div>
+    <div class="where" aria-live="polite">
+      <div class="where-t" id="whereT"></div>
+      <div class="bar" role="progressbar" aria-label="Avance total" aria-valuemin="0" aria-valuemax="100" id="barWrap"><i id="barFill"></i></div>
+    </div>
+    <span class="pct" id="pctTxt">0 %</span>
+    <button class="hbtn hide-sm" id="projBtn" type="button" aria-pressed="false">Modo proyección</button>
+    <button class="hbtn" id="docBtn" type="button" aria-pressed="false" title="Organiza la explicación en clase; no es un sistema de seguridad">Mostrar solución docente</button>
+  </div>
+</header>
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="Sesiones y ejercicios"></nav>
+  <main id="main" tabindex="-1"></main>
+</div>
+<script>
+"use strict";
+/* =======================================================================
+   SIMULADOR TEMA 07 · Spark en Google Colab · CIIN1021P (UPN)
+   Organización:
+     0. Utilidades            3. Componentes visuales
+     1. Datos del caso        4. Actividades (preguntas, respuestas, pistas)
+     2. Navegación            5. Validadores · 6. Pistas y solución docente
+                              7. Progreso, simulaciones y eventos
+   Ninguna celda ejecuta Python, PySpark ni SQL: todo se calcula en
+   JavaScript con los controles de la guía y de datos_tema07.zip.
+   ======================================================================= */
+
+/* =======================================================================
+   0. UTILIDADES
+   ======================================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const dec = (n, d = 2) => Number(n).toFixed(d);
+const NULLC = '<span class="null">NULL</span>';
+const stripAcc = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "");
+/* Normaliza código para comparar: sin espacios sobrantes, mayúsculas, comillas unificadas. */
+function normCode(s) {
+  return stripAcc(s).replace(/[“”«»]/g, '"').replace(/[‘’]/g, "'").replace(/'/g, '"').trim().replace(/;+$/, "")
+    .replace(/\s+/g, " ").replace(/\s*([(),=\[\]<>*+\/.-])\s*/g, "$1").toUpperCase();
+}
+const normTxt = s => stripAcc(s).toLowerCase().replace(/\s+/g, " ").trim();
+function parseNum(v) {
+  if (v == null) return NaN;
+  let s = String(v).replace(/%/g, "").replace(/\s/g, "");
+  if (!s) return NaN;
+  if (s.includes(",") && s.includes(".")) s = s.replace(/,/g, ""); else s = s.replace(",", ".");
+  return Number(s);
+}
+/* Resaltado estilo VS Code para Python y SQL */
+function hl(text, lang = "py") {
+  const KW = new Set((lang === "py"
+    ? "def return lambda import from as with for in if else elif not and or assert print True False None is"
+    : "SELECT FROM WHERE GROUP BY ORDER AS INNER LEFT JOIN ON AND OR NOT NULL DESC ASC").split(" "));
+  const FN = new Set("COUNT SUM AVG ROUND count sum collect filter map reduceByKey parallelize glom getNumPartitions toDebugString read schema csv option printSchema show createOrReplaceTempView sql agg first dropDuplicates join withColumn when otherwise col isNull isin groupBy orderBy select distinct withColumnRenamed alias stddev_samp avg round write mode parquet explain builder appName master config getOrCreate range setLogLevel decode upload".split(" "));
+  const re = lang === "py"
+    ? /(#[^\n]*)|("""[\s\S]*?"""|'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][\w]*)|([\s\S])/g
+    : /(--[^\n]*)|('(?:[^'\n])*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][\w]*)|([\s\S])/g;
+  let out = "", m;
+  while ((m = re.exec(text))) {
+    if (m[1]) out += '<span class="cm">' + esc(m[1]) + "</span>";
+    else if (m[2]) out += '<span class="st">' + esc(m[2]) + "</span>";
+    else if (m[3]) out += '<span class="nm">' + m[3] + "</span>";
+    else if (m[4]) {
+      const w = m[4], next = /^\s*\(/.test(text.slice(re.lastIndex));
+      if (KW.has(w) || (lang === "sql" && KW.has(w.toUpperCase()) && w === w.toUpperCase())) out += '<span class="kw">' + esc(w) + "</span>";
+      else if (FN.has(w) && next) out += '<span class="fn">' + esc(w) + "</span>";
+      else out += esc(w);
+    } else out += esc(m[5]);
+  }
+  return out;
+}
+/* Bloque de código con botón Copiar */
+const COPYBUF = [];
+function CODE(text, lang = "py", label) {
+  const id = COPYBUF.push(text) - 1;
+  return `<div class="cw"><div class="cbar"><span>${label || (lang === "py" ? "Celda de Colab · Python / PySpark" : "Spark SQL")}</span><button class="mini copy" type="button" data-copy="${id}">Copiar</button></div><pre class="code" tabindex="0">${hl(text, lang)}</pre></div>`;
+}
+const SIMTAG = '<span class="sim-tag">Simulación didáctica · calculada en el navegador</span>';
+
+/* =======================================================================
+   1. DATOS DEL CASO (controles de la guía y de datos_tema07.zip)
+   ======================================================================= */
+const VIAJES = [
+  { c: "CEN-001", f: "2026-09-03", s: "EJECUTIVO", d: "Comas", i: 15 },
+  { c: "CEN-002", f: "2026-09-04", s: "EJECUTIVO", d: "Comas", i: 20 },
+  { c: "CEN-003", f: "2026-09-05", s: "ESTANDAR", d: "Los Olivos", i: 10 },
+  { c: "CEN-004", f: "2026-09-06", s: "ESTANDAR", d: "Los Olivos", i: 20 },
+  { c: "CEN-005", f: "2026-10-04", s: "ESTANDAR", d: "Comas", i: 30 },
+  { c: "CEN-006", f: "2026-10-05", s: "ENCOMIENDA", d: "Independencia", i: 25 }
+];
+const DISTRITOS = ["Comas", "Independencia", "Los Olivos"];
+/* Pares del Ejercicio 02 y su reparto en 2 particiones (salida de glom en la guía docente) */
+const PARES = [["Comas", 15], ["Comas", 20], ["Los Olivos", 10], ["Los Olivos", 20], ["Comas", 30], ["Independencia", 25]];
+const PART = [[0, 1, 2], [3, 4, 5]];
+/* Ejercicio 03 */
+const ETL = { recibidos: 1809, duplicados: 5, unicos: 1804, aceptados: 1800, rechazados: 4 };
+/* Ejercicios 04 y 05 · por región (controles docentes y datos_tema07.zip) */
+const REG = {
+  Norte:  { pes: 600, kg: 5998,  plas: 3900,  vid: 1000, org: 1098, jor: 200, volJ: 2700, media: 749.90, sd: 213.39, ratio: 692.31, alto: 0,   bajo: 200 },
+  Centro: { pes: 600, kg: 11998, plas: 7900,  vid: 1800, org: 2298, jor: 200, volJ: 3100, media: 398.08, sd: 51.38,  ratio: 392.41, alto: 103, bajo: 97 },
+  Sur:    { pes: 600, kg: 17998, plas: 11900, vid: 2600, org: 3498, jor: 200, volJ: 3500, media: 295.63, sd: 26.86,  ratio: 294.12, alto: 200, bajo: 0 }
+};
+const REGIONES = ["Norte", "Centro", "Sur"];
+const COLOR_REG = { Norte: "var(--s-norte)", Centro: "var(--s-centro)", Sur: "var(--s-sur)" };
+/* Jornada 1 (Norte): sus tres pesajes válidos y sus voluntarios */
+const J1 = { id: 1, playa: "Playa Demo 01", region: "Norte", fecha: "2026-01-01", vol: 11, pes: [["PLASTICO", 10], ["VIDRIO", 2], ["ORGANICO", 3]] };
+
+/* =======================================================================
+   3. COMPONENTES VISUALES (diagramas estáticos)
+   ======================================================================= */
+function relSVG() {
+  const box = (x, y, w, name, rows, fill) => {
+    let s = `<rect x="${x}" y="${y}" width="${w}" height="${30 + rows.length * 22}" rx="5" style="fill:var(--surface);stroke:currentColor" stroke-width="1.4"/><rect x="${x}" y="${y}" width="${w}" height="28" rx="5" style="fill:${fill}"/><text x="${x + 10}" y="${y + 19}" font-size="13" font-weight="700" style="fill:#000">${name}</text>`;
+    rows.forEach((r, i) => s += `<text class="svgt" x="${x + 10}" y="${y + 46 + i * 22}" font-size="12">${r}</text>`);
+    return s;
+  };
+  return `<figure><div class="fig-wrap"><svg viewBox="0 0 780 190" role="img" aria-label="Relaciones: una playa tiene muchas jornadas; una jornada tiene muchos pesajes de residuos.">
+  <defs><marker id="arT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:currentColor"/></marker></defs>
+  ${box(10, 30, 200, "playas.csv · 6 filas", ["PlayaID (clave)", "Nombre", "Region: Norte, Centro, Sur"], "var(--upn)")}
+  ${box(290, 30, 220, "jornadas.csv · 600 filas", ["JornadaID (clave)", "PlayaID", "Fecha · NumVoluntarios", "TemperaturaAmbiente"], "var(--upn)")}
+  ${box(590, 30, 180, "residuos.csv · 1809 filas", ["RegistroID", "JornadaID", "TipoResiduo · PesoKg"], "var(--upn)")}
+  <line x1="210" y1="80" x2="288" y2="80" style="stroke:currentColor" stroke-width="1.8" marker-end="url(#arT)"/>
+  <text class="svgt" x="249" y="72" font-size="11.5" text-anchor="middle">1 → N</text>
+  <line x1="510" y1="80" x2="588" y2="80" style="stroke:currentColor" stroke-width="1.8" marker-end="url(#arT)"/>
+  <text class="svgt" x="549" y="72" font-size="11.5" text-anchor="middle">1 → N</text>
+  <text x="390" y="176" font-size="12" text-anchor="middle" style="fill:var(--muted)">Una playa tiene 100 jornadas; una jornada tiene 3 pesajes válidos (PLASTICO, VIDRIO, ORGANICO).</text>
+  </svg></div><figcaption>Grano: una fila de residuos es un pesaje de un tipo de residuo en una jornada.</figcaption></figure>`;
+}
+function funnelHTML() {
+  return `<div class="funnel" role="group" aria-label="Recorrido de calidad">
+   <div class="fstep"><strong>${ETL.recibidos}</strong><span>recibidos</span></div>
+   <div class="fstep r"><strong>− ${ETL.duplicados}</strong><span>duplicados exactos</span></div>
+   <div class="fstep y"><strong>${ETL.unicos}</strong><span>únicos antes de validar</span></div>
+   <div class="fstep g"><strong>${ETL.aceptados}</strong><span>aceptados</span></div>
+   <div class="fstep r"><strong>${ETL.rechazados}</strong><span>rechazados con motivo</span></div></div>`;
+}
+function pipeSVG() {
+  const b = (x, w, t1, t2, fill, ink = "#000") => `<rect x="${x}" y="28" width="${w}" height="62" rx="6" style="fill:${fill};stroke:currentColor" stroke-width="1.3"/><text x="${x + w / 2}" y="54" text-anchor="middle" font-size="12.5" font-weight="700" style="fill:${ink}">${t1}</text><text x="${x + w / 2}" y="74" text-anchor="middle" font-size="11.5" style="fill:${ink}">${t2}</text>`;
+  const a = (x1, x2, t) => `<line x1="${x1}" y1="59" x2="${x2}" y2="59" style="stroke:currentColor" stroke-width="1.8" marker-end="url(#arP5)"/><text class="svgt" x="${(x1 + x2) / 2}" y="20" text-anchor="middle" font-size="11">${t}</text>`;
+  return `<figure><div class="fig-wrap"><svg viewBox="0 0 800 110" role="img" aria-label="Recorrido: detalle limpio de 1800 filas, carpeta Parquet, relectura de 1800 filas, CSV de 3 filas, reporte en Power BI.">
+  <defs><marker id="arP5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:currentColor"/></marker></defs>
+  ${b(5, 130, "Detalle limpio", "1800 pesajes", "var(--ok-bg)", "currentColor")}${a(135, 165, "write.parquet")}
+  ${b(165, 140, "detalle_parquet/", "carpeta con part-*", "var(--upn)")}${a(305, 335, "read.parquet")}
+  ${b(335, 130, "Relectura", "1800 filas ✓", "var(--surface-2)", "currentColor")}${a(465, 495, "agregar")}
+  ${b(495, 140, "resumen_region.csv", "3 filas", "var(--surface-2)", "currentColor")}${a(635, 665, "importar")}
+  ${b(665, 130, "Power BI", "reporte .pbix", "#141414", "#fff")}
+  </svg></div><figcaption>Parquet guarda el detalle con tipos para volver a usarlo; el CSV pequeño lleva solo el resumen a Power BI.</figcaption></figure>`;
+}
+/* Barras horizontales con etiqueta directa */
+function hbars(rows, unit, maxV, fmt = v => dec(v, 3)) {
+  const W = 560, x0 = 80, h = 30;
+  let s = "";
+  rows.forEach((r, i) => {
+    const y = 6 + i * (h + 10), w = Math.max(2, (W - x0 - 90) * r.v / maxV);
+    s += `<text x="${x0 - 8}" y="${y + 20}" text-anchor="end" font-size="13" style="fill:var(--ink-2)">${r.k}</text>
+      <path d="M${x0} ${y}h${w - 4}q4 0 4 4v${h - 8}q0 4 -4 4h${-(w - 4)}z" style="fill:${r.c}"><title>${r.k}: ${fmt(r.v)} ${unit}</title></path>
+      <text x="${x0 + w + 8}" y="${y + 20}" font-size="13" font-weight="700" style="fill:var(--ink)">${fmt(r.v)} ${unit}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${rows.length * (h + 10) + 8}" style="max-width:620px" role="img" aria-label="Gráfico de barras">${s}</svg>`;
+}
+/* Media ± desviación por región */
+function meanSdSVG() {
+  const W = 560, x0 = 80, max = 1000, sc = (W - x0 - 30) / max;
+  let s = "";
+  [0, 250, 500, 750, 1000].forEach(t => { const x = x0 + t * sc; s += `<line x1="${x}" y1="8" x2="${x}" y2="138" style="stroke:var(--line)"/><text x="${x}" y="154" text-anchor="middle" font-size="11" style="fill:var(--muted)">${t}</text>`; });
+  REGIONES.forEach((r, i) => {
+    const d = REG[r], y = 26 + i * 42, m = x0 + d.media * sc, a = x0 + (d.media - d.sd) * sc, b = x0 + (d.media + d.sd) * sc;
+    s += `<text x="${x0 - 8}" y="${y + 5}" text-anchor="end" font-size="13" style="fill:var(--ink-2)">${r}</text>
+     <line x1="${a}" y1="${y}" x2="${b}" y2="${y}" style="stroke:${COLOR_REG[r]}" stroke-width="3"/>
+     <line x1="${a}" y1="${y - 7}" x2="${a}" y2="${y + 7}" style="stroke:${COLOR_REG[r]}" stroke-width="2"/><line x1="${b}" y1="${y - 7}" x2="${b}" y2="${y + 7}" style="stroke:${COLOR_REG[r]}" stroke-width="2"/>
+     <circle cx="${m}" cy="${y}" r="6" style="fill:${COLOR_REG[r]};stroke:var(--surface)" stroke-width="2"><title>${r}: media ${dec(d.media)} ± ${dec(d.sd)}</title></circle>
+     <text x="${b + 8}" y="${y + 4}" font-size="12" style="fill:var(--ink)">${dec(d.media)} ± ${dec(d.sd)}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} 162" style="max-width:640px" role="img" aria-label="Media y desviación estándar de voluntarios por tonelada de plástico, por región">${s}<text x="${x0}" y="0" font-size="1"> </text></svg>`;
+}
+</script>
+<script>
+"use strict";
+/* =======================================================================
+   4. ACTIVIDADES
+   -----------------------------------------------------------------------
+   type: choice | multi | match | fill | fields | text | mission | cards
+   h   : tres pistas graduales (orientación, estructura, parte de la respuesta)
+   exp : explicación tras comprobar      sol : solución docente
+   En "fill", [[k]] marca un espacio. acc admite textos (se comparan sin
+   espacios ni mayúsculas, con comillas simples o dobles) o expresiones
+   regulares. Nunca se ejecuta el código del estudiante (no hay eval).
+   ======================================================================= */
+const CONCEPTOS = {
+  s1_env: "Piezas del entorno (Colab, PySpark, Spark)",
+  s1_local: "local[2]: hilos frente a servidores",
+  e1_df: "DataFrame y esquema explícito",
+  e1_sql: "Spark SQL y controles equivalentes",
+  e2_rdd: "RDD, tuplas y particiones",
+  e2_lazy: "Transformaciones, acciones y ejecución perezosa",
+  e2_todo: "filter, map y reduceByKey (TODO 1)",
+  s2_grano: "Archivos, relaciones y grano",
+  e3_dup: "Duplicados y claves maestras",
+  e3_rules: "Reglas de calidad con when (TODO 2)",
+  e3_rate: "Conciliación y denominador de la tasa",
+  e4_sql: "Toneladas por región (TODO 3)",
+  e4_grain: "Pesaje, jornada y voluntarios",
+  e4_stats: "Media, desviación y no aditividad",
+  e5_parquet: "Parquet frente a CSV",
+  e5_report: "Reporte e interpretación (TODO 4)",
+  e5_reto: "Reto integrador de plástico"
+};
+
+const ACT = {
+/* ----------------------------- SESIÓN 1 · PREPARACIÓN ----------------------------- */
+s1_herr: { c: "s1_env", type: "match",
+  q: "Relaciona cada pieza con lo que hace en la práctica.",
+  items: [
+    { l: "Google Colab", a: "Entorno en el navegador donde se ejecuta el cuaderno" },
+    { l: "Python", a: "Lenguaje con el que escribimos las instrucciones" },
+    { l: "PySpark", a: "API de Python para usar Apache Spark" },
+    { l: "Apache Spark", a: "Motor que reparte y procesa los datos" },
+    { l: "Spark SQL", a: "Consultas SQL sobre datos registrados en Spark" },
+    { l: "CSV", a: "Archivo de texto de entrada" },
+    { l: "DataFrame", a: "Datos en columnas con nombre y tipo" },
+    { l: "RDD", a: "Colección inmutable dividida en particiones" },
+    { l: "Driver", a: "Proceso que coordina la aplicación y recibe collect" }
+  ],
+  choices: ["API de Python para usar Apache Spark", "Archivo de texto de entrada", "Colección inmutable dividida en particiones", "Consultas SQL sobre datos registrados en Spark", "Datos en columnas con nombre y tipo", "Entorno en el navegador donde se ejecuta el cuaderno", "Lenguaje con el que escribimos las instrucciones", "Motor que reparte y procesa los datos", "Proceso que coordina la aplicación y recibe collect"],
+  h: ["Pulsa cada pieza del mapa de arriba: su descripción aparece en el panel.", "Colab es el lugar; Python el idioma; PySpark el puente; Spark el motor.", "DataFrame = columnas con tipo; RDD = colección en particiones; Driver = coordinador."],
+  exp: "Colab presta la máquina, Python da las órdenes, PySpark las traduce para Spark y Spark hace el trabajo. Spark SQL, DataFrame y RDD son formas de manejar los datos dentro de Spark.",
+  sol: "Colab → entorno · Python → lenguaje · PySpark → API · Spark → motor · Spark SQL → consultas · CSV → archivo de entrada · DataFrame → columnas con tipo · RDD → colección en particiones · Driver → coordinador." },
+
+s1_local: { c: "s1_local", type: "choice", auto: 1,
+  q: "El cuaderno inicia Spark con .master('local[2]'). ¿Qué significa?",
+  opts: [
+    { t: "Dos servidores conectados en un clúster.", fb: "No hay clúster: todo corre en la máquina temporal de Colab." },
+    { t: "Dos hilos de ejecución en una sola máquina (la de Colab).", ok: 1, fb: "Correcto. Simula el trabajo en paralelo dentro de un solo equipo." },
+    { t: "Dos copias de los datos para tener respaldo.", fb: "local[2] no copia datos; indica cuántos hilos usar." },
+    { t: "Dos cuadernos abiertos al mismo tiempo.", fb: "Cada cuaderno inicia su propia sesión; el número no se refiere a cuadernos." }
+  ],
+  h: ["«local» indica dónde corre Spark.", "El número entre corchetes es la cantidad de hilos.", "Una máquina, dos hilos."],
+  exp: "local[2] usa dos hilos en la misma máquina. Sirve para aprender cómo Spark reparte el trabajo, pero no prueba que existan dos servidores.",
+  sol: "Dos hilos de ejecución en una sola máquina." },
+
+s1_arranque: { c: "s1_env", type: "fields",
+  q: "Ejecuta el Paso 0 en Colab y escribe lo que muestra.",
+  fields: [
+    { k: "v", l: "Spark:", kind: "text", acc: ["4.0.3"] },
+    { k: "m", l: "Modo:", kind: "text", acc: ["local[2]"], code: 1 },
+    { k: "n", l: "Archivos CSV listados", kind: "num", v: 5 }
+  ],
+  h: ["Mira la salida de la celda que crea SparkSession.", "La última celda del Paso 0 lista los archivos de datos_tema07.zip.", "Spark 4.0.3 · local[2] · 5 archivos."],
+  exp: "Si falta un archivo o aparece otro modo, vuelve a ejecutar el Paso 0 en orden y sube el ZIP sin descomprimir.",
+  sol: "Spark: 4.0.3 · Modo: local[2] · 5 archivos CSV (jornadas, movitrack_control, playas, residuos, sensores)." },
+
+/* ----------------------------- EJERCICIO 01 ----------------------------- */
+e1_pred: { c: "e1_sql", type: "fields", auto: 1,
+  q: "Predicción: antes de agrupar, ¿cuántos viajes y qué importe tendrá Comas?",
+  fields: [{ k: "v", l: "Viajes de Comas", kind: "num", v: 3 }, { k: "i", l: "Importe de Comas", kind: "num", v: 65 }],
+  h: ["Busca en la tabla las filas cuyo Distrito es Comas.", "Cuéntalas y suma su columna Importe.", "Son tres viajes: 15 + 20 + 30."],
+  exp: "Cuando comprobaste, se habilitó la vista «Agrupado». Compárala con tu predicción.",
+  sol: "Comas: 3 viajes y 65.00 (15 + 20 + 30)." },
+
+e1_tipos: { c: "e1_df", type: "match",
+  q: "¿Qué tipo declara el esquema para cada columna?",
+  items: [{ l: "CodigoViaje", a: "STRING" }, { l: "Fecha", a: "DATE" }, { l: "Distrito", a: "STRING" }, { l: "Importe", a: "DECIMAL(12,2)" }],
+  choices: ["DATE", "DECIMAL(12,2)", "INT", "STRING"],
+  h: ["Pulsa el nombre de cada columna en la vista «Esquema».", "Texto = STRING; fecha = DATE; dinero con dos decimales = DECIMAL.", "Importe → DECIMAL(12,2)."],
+  exp: "Declarar el esquema evita que Spark adivine los tipos. DECIMAL(12,2) guarda montos exactos con dos decimales.",
+  sol: "CodigoViaje STRING · Fecha DATE · Distrito STRING · Importe DECIMAL(12,2)." },
+
+e1_nullable: { c: "e1_df", type: "choice", auto: 1,
+  q: "printSchema muestra «nullable = true» en Importe. ¿Qué significa?",
+  opts: [
+    { t: "Que la columna admite valores nulos; no indica que existan.", ok: 1, fb: "Correcto. Es una propiedad del esquema, no un conteo de vacíos." },
+    { t: "Que hay importes vacíos en el archivo.", fb: "Los 6 importes tienen valor. nullable describe lo permitido, no lo que hay." },
+    { t: "Que el importe se puede borrar.", fb: "nullable no habla de borrar datos." },
+    { t: "Que Spark no reconoció el tipo.", fb: "El tipo sí se reconoció: decimal(12,2)." }
+  ],
+  h: ["«nullable» viene de «null» + «able».", "Es una regla del esquema.", "Admite nulos."],
+  exp: "Para saber si hay nulos hay que contarlos, por ejemplo con filter(col.isNull()).count().",
+  sol: "La columna admite nulos; no afirma que existan." },
+
+e1_res: { c: "e1_sql", type: "fields",
+  q: "Ejecuta el Paso 2 en Colab y registra los controles.",
+  fields: [
+    { k: "iv", l: "Independencia · Viajes", kind: "num", v: 1 }, { k: "li", l: "Los Olivos · ImporteTotal", kind: "num", v: 30 },
+    { k: "tv", l: "Total de viajes", kind: "num", v: 6 }, { k: "ti", l: "Total de importe", kind: "num", v: 120 }
+  ],
+  h: ["Lee la tabla que devuelve spark.sql(...).show().", "Los distritos deben sumar 6 viajes y 120.00.", "Independencia tiene 1 viaje."],
+  exp: "Son los mismos valores del Tema 06 en SQL Server: el motor cambió, el indicador no.",
+  sol: "Comas 3 · 65.00 · Independencia 1 · 25.00 · Los Olivos 2 · 30.00 · Total 6 · 120.00." },
+
+e1_cambio: { c: "e1_sql", type: "choice", auto: 1,
+  q: "¿Cambiar de SQL Server a Spark debería cambiar estos totales?",
+  opts: [
+    { t: "No. El indicador depende de los datos y su definición; si cambia, hay un error de lectura o de tipos.", ok: 1, fb: "Correcto. Por eso se usan los controles conocidos antes de trabajar con datos nuevos." },
+    { t: "Sí, Spark calcula con más precisión.", fb: "Con DECIMAL ambos motores suman exactamente lo mismo." },
+    { t: "Sí, porque Spark reparte los datos en particiones.", fb: "Repartir no cambia la suma total." },
+    { t: "Depende de la velocidad de la conexión.", fb: "La velocidad no altera los resultados." }
+  ],
+  h: ["Piensa en qué define el resultado: los datos o la herramienta.", "Un control conocido sirve para detectar errores.", "No debería cambiar."],
+  exp: "Comprobar con 6 y 120.00 da confianza antes de trabajar con 1809 registros que no conocemos.",
+  sol: "No; si cambian, hay un error de lectura, de tipos o de consulta." },
+
+e1_rend: { c: "e1_sql", type: "choice", auto: 1,
+  q: "Con estas 6 filas, ¿qué podemos afirmar sobre el rendimiento de Spark frente a SQL Server?",
+  opts: [
+    { t: "Nada: 6 filas no permiten medir rendimiento; arrancar el motor cuesta más que procesarlas.", ok: 1, fb: "Correcto. El ejercicio verifica significado, no velocidad." },
+    { t: "Que Spark es más rápido.", fb: "No se midió nada. Con 6 filas el arranque domina el tiempo." },
+    { t: "Que SQL Server ya no es necesario.", fb: "Cada motor tiene su uso; este ejercicio no compara capacidades." },
+    { t: "Que Spark solo sirve para datos pequeños.", fb: "Spark está pensado para volúmenes grandes; aquí usamos una muestra didáctica." }
+  ],
+  h: ["¿Se midió algún tiempo en el ejercicio?", "El CSV es una copia didáctica de 6 viajes.", "No se puede afirmar una mejora."],
+  exp: "El CSV didáctico conserva los controles del Tema 06. No es una exportación de tu servidor ni una prueba de rendimiento.",
+  sol: "Nada sobre rendimiento: 6 filas solo sirven para verificar resultados." },
+
+/* ----------------------------- EJERCICIO 02 ----------------------------- */
+e2_lambda: { c: "e2_rdd", type: "fields",
+  q: "Inspecciona la tupla ('Los Olivos', 20) y completa.",
+  fields: [
+    { k: "a", l: "fila[0]", kind: "text", acc: ["Los Olivos", "'Los Olivos'", "\"Los Olivos\""] },
+    { k: "b", l: "fila[1]", kind: "num", v: 20 },
+    { k: "c", l: "lambda fila: fila[0] == 'Comas' devuelve", kind: "select", opts: ["True", "False"], ans: ["False"] }
+  ],
+  h: ["En Python las posiciones empiezan en 0.", "fila[0] es el distrito; fila[1], el importe.", "fila[0] = 'Los Olivos'."],
+  exp: "Una lambda es una función corta sin nombre: recibe una fila y devuelve un valor. filter la usa para decidir si la fila se conserva.",
+  sol: "fila[0] = 'Los Olivos' · fila[1] = 20 · la lambda devuelve False." },
+
+e2_pred_part: { c: "e2_rdd", type: "multi", auto: 1,
+  q: "Predicción: mira la salida de glom(). ¿En qué particiones hay tuplas de Comas?",
+  opts: [{ t: "Partición 0", ok: 1 }, { t: "Partición 1", ok: 1 }, { t: "En ninguna: Comas está en el driver", fb: "El driver coordina; los datos están en las particiones." }],
+  h: ["Revisa las dos cajas de particiones.", "Comas aparece con 15 y 20, y también con 30.", "Están en las dos."],
+  exp: "Como Comas está en las dos particiones, para sumar Comas Spark tendrá que juntar datos de ambas: eso ocurre en reduceByKey.",
+  sol: "En las dos: (Comas,15) y (Comas,20) en la partición 0; (Comas,30) en la 1." },
+
+e2_niveles: { c: "e2_rdd", type: "match",
+  q: "Diferencia los tres niveles.",
+  items: [
+    { l: "Partición", a: "División lógica de los datos" },
+    { l: "Hilo", a: "Recurso que ejecuta una tarea" },
+    { l: "Máquina", a: "Equipo donde corre Spark (aquí, la de Colab)" }
+  ],
+  choices: ["División lógica de los datos", "Equipo donde corre Spark (aquí, la de Colab)", "Recurso que ejecuta una tarea"],
+  h: ["Uno es sobre datos, otro sobre trabajo y otro sobre hardware.", "Una tarea procesa una partición usando un hilo.", "Partición → división de datos."],
+  exp: "En local[2], dos hilos de una misma máquina procesan las particiones. En un clúster real, las tareas se repartirían entre varias máquinas.",
+  sol: "Partición → división lógica · Hilo → ejecuta una tarea · Máquina → equipo de Colab." },
+
+e2_pred_lazy: { c: "e2_lazy", type: "choice", auto: 1,
+  q: "Predicción: agregas filter y map al plan, pero no pulsas ninguna acción. ¿Cuántas tuplas procesó Spark?",
+  opts: [
+    { t: "Ninguna. Solo registró el plan.", ok: 1, fb: "Correcto: la ejecución es perezosa." },
+    { t: "Las 6, al escribir filter.", fb: "filter es una transformación: describe, no ejecuta." },
+    { t: "Solo las 3 de Comas.", fb: "Todavía no se evaluó ninguna condición." },
+    { t: "Las de la partición 0.", fb: "Ninguna partición se procesó aún." }
+  ],
+  h: ["¿filter pide un resultado?", "Las transformaciones esperan a una acción.", "Ninguna."],
+  exp: "Spark espera a una acción para ver el plan completo y ejecutarlo de una vez.",
+  sol: "Ninguna: sin acción, Spark solo guarda el plan." },
+
+e2_plan: { c: "e2_lazy", type: "mission", sim: "rdd",
+  q: "Arma el plan y ejecuta las acciones en el simulador. Las tareas se marcan solas.",
+  missions: [["f", "Agrega filter (Comas) al plan"], ["m", "Agrega map (importe) al plan"], ["r", "Agrega reduceByKey (suma) al plan"],
+    ["count", "Ejecuta la acción count() sobre comas"], ["sum", "Ejecuta la acción sum() sobre importes_comas"], ["collect", "Ejecuta collect() sobre por_distrito y observa la redistribución"]],
+  h: ["Empieza por los botones de transformación.", "Las acciones se habilitan cuando su transformación está en el plan.", "collect() muestra la redistribución por clave."],
+  exp: "Mientras solo agregas transformaciones, el RDD original no cambia y nada se procesa. Cada acción ejecuta la parte del plan que necesita.",
+  sol: "filter → map → reduceByKey → count() = 3 → sum() = 65 → collect() = Comas 65, Independencia 25, Los Olivos 30." },
+
+e2_todo1: { c: "e2_todo", type: "fill", lang: "py",
+  q: "TODO 1. Completa las tres transformaciones.",
+  code: `# 1. filter conserva únicamente las tuplas de Comas.
+# 2. map obtiene el importe, ubicado en la posición 1 de cada tupla.
+# 3. reduceByKey suma los importes que tienen la misma clave distrito.
+comas = rdd.filter(lambda fila: [[a]])
+importes_comas = comas.map(lambda fila: [[b]])
+por_distrito = rdd.reduceByKey(lambda a, b: [[c]])`,
+  blanks: {
+    a: { acc: ['FILA[0]=="COMAS"', '"COMAS"==FILA[0]'], wrong: [[/^FILA\[1\]/, "La posición 1 es el importe; el distrito está en fila[0]."], [/^FILA\[0\]="COMAS"$/, "Un solo = asigna; para comparar se usa ==."], [/^"COMAS"$/, "La lambda debe devolver True o False: compara fila[0] con 'Comas'."]], w: 20 },
+    b: { acc: ["FILA[1]"], wrong: [[/^FILA\[0\]$/, "fila[0] es el distrito; el importe está en la posición 1."], [/^FILA$/, "Devuelve solo el importe, no la tupla completa."]], w: 9 },
+    c: { acc: ["A+B", "B+A"], wrong: [[/^A\*B|^B\*A/, "Multiplicar no suma importes."], [/^SUM/, "Dentro de reduceByKey se combinan dos valores: a + b."]], w: 7 }
+  },
+  h: ["Cada lambda recibe una fila (tupla) y devuelve algo.", "filter devuelve True/False; map devuelve un valor; reduceByKey combina dos valores de la misma clave.", "Empieza con: fila[0] == 'Comas'"],
+  exp: "filter y map trabajan fila por fila. reduceByKey combina valores de la misma clave, primero dentro de cada partición y luego entre particiones.",
+  sol: CODE(`comas = rdd.filter(lambda fila: fila[0] == "Comas")
+importes_comas = comas.map(lambda fila: fila[1])
+por_distrito = rdd.reduceByKey(lambda a, b: a + b)`) },
+
+e2_res: { c: "e2_todo", type: "fields",
+  q: "Ejecuta la celda del TODO 1 y su comprobación en Colab. Registra los resultados.",
+  fields: [
+    { k: "p", l: "Particiones", kind: "num", v: 2 }, { k: "c", l: "Viajes de Comas", kind: "num", v: 3 },
+    { k: "s", l: "Importe de Comas", kind: "num", v: 65 }, { k: "o", l: "Total de Los Olivos", kind: "num", v: 30 }
+  ],
+  h: ["Las respuestas aparecen en los print de la celda.", "Debe imprimirse «TODO 1 verificado».", "Particiones = 2; Comas 3 y 65."],
+  exp: "Los totales coinciden con el E01: Comas 65, Independencia 25, Los Olivos 30.",
+  sol: "2 particiones · Comas 3 viajes y 65 · Los Olivos 30 · Independencia 25." },
+
+e2_acciones: { c: "e2_lazy", type: "multi",
+  q: "¿Cuáles de estas instrucciones son acciones (piden un resultado)?",
+  opts: [
+    { t: "count()", ok: 1 }, { t: "sum()", ok: 1 }, { t: "collect()", ok: 1 },
+    { t: "filter()", fb: "filter es una transformación: describe un RDD nuevo." },
+    { t: "map()", fb: "map es una transformación." },
+    { t: "reduceByKey()", fb: "reduceByKey es una transformación, aunque redistribuye datos por clave." }
+  ],
+  h: ["Una acción devuelve un número, una lista o escribe un archivo.", "Las transformaciones devuelven otro RDD.", "Son tres."],
+  exp: "collect trae todos los resultados al driver: aquí son pocos, pero con millones de filas podría agotar su memoria.",
+  sol: "count(), sum() y collect()." },
+
+e2_interp: { c: "e2_lazy", type: "text",
+  q: "Interpretación (dos líneas): ¿qué instrucción solicita un resultado y por qué dos particiones no significan dos servidores?",
+  parts: [{ k: "t", l: "Tu respuesta", rub: [
+    { any: ["count", "sum", "collect", "accion"], miss: "Nombra al menos una acción (count, sum o collect)." },
+    { any: ["hilo", "maquina", "servidor", "local", "misma", "un solo equipo", "una sola"], miss: "Explica que las particiones se procesan con hilos de la misma máquina (local[2])." }] }],
+  h: ["Relee la tabla de tipos de instrucción.", "Una partición es una división de datos, no un equipo.", "«count, sum y collect piden resultados…»"],
+  exp: "Partición describe cómo se dividen los datos; hilo y máquina describen dónde se ejecuta el trabajo.",
+  sol: "count, sum y collect son acciones: piden un resultado y desencadenan el trabajo. Las dos particiones se procesan con dos hilos de la misma máquina de Colab (local[2]); no hay dos servidores." },
+
+/* ----------------------------- SESIÓN 2 · ARRANQUE ----------------------------- */
+s2_grano: { c: "s2_grano", type: "choice", auto: 1,
+  q: "¿Qué representa una fila de residuos.csv?",
+  opts: [
+    { t: "Un pesaje de un tipo de residuo en una jornada.", ok: 1, fb: "Correcto. Cada jornada válida tiene 3 pesajes: PLASTICO, VIDRIO y ORGANICO." },
+    { t: "Una jornada de limpieza.", fb: "Las jornadas están en jornadas.csv (600 filas)." },
+    { t: "Un voluntario.", fb: "No hay una fila por persona: NumVoluntarios es un conteo por jornada." },
+    { t: "Una playa.", fb: "Las playas están en playas.csv (6 filas)." }
+  ],
+  h: ["Mira las columnas de residuos.csv.", "Tiene RegistroID, JornadaID, TipoResiduo y PesoKg.", "Es un pesaje."],
+  exp: "Saber qué es una fila (el grano) decide qué se puede contar y sumar sin duplicar.",
+  sol: "Un pesaje de un tipo de residuo en una jornada." },
+
+s2_cuentas: { c: "s2_grano", type: "fields",
+  q: "Con el diagrama de relaciones, completa.",
+  fields: [{ k: "j", l: "Jornadas por playa", kind: "num", v: 100 }, { k: "p", l: "Pesajes válidos por jornada", kind: "num", v: 3 }, { k: "t", l: "Pesajes válidos en total", kind: "num", v: 1800 }],
+  h: ["600 jornadas entre 6 playas.", "Cada jornada tiene un pesaje por tipo de residuo.", "600 × 3 = …"],
+  exp: "1800 pesajes válidos + 5 duplicados + 4 defectuosos = 1809 filas recibidas.",
+  sol: "100 jornadas por playa · 3 pesajes por jornada · 1800 pesajes válidos." },
+
+/* ----------------------------- EJERCICIO 03 ----------------------------- */
+e3_pred: { c: "e3_dup", type: "fields", auto: 1,
+  q: "Predicción: residuos.csv trae 1809 filas y 5 duplicados exactos. ¿Cuántas quedan tras dropDuplicates()?",
+  fields: [{ k: "u", l: "Registros únicos", kind: "num", v: 1804 }],
+  h: ["dropDuplicates quita las copias, no los originales.", "1809 − 5.", "Termina en 04."],
+  exp: "Los 5 duplicados son copias exactas de los RegistroID 1 a 5. Se conserva una fila de cada uno.",
+  sol: "1804 registros únicos." },
+
+e3_dup: { c: "e3_dup", type: "choice", auto: 1,
+  q: "En este ejercicio, ¿qué compara dropDuplicates() sin argumentos?",
+  opts: [
+    { t: "Filas completas: todas las columnas deben ser iguales.", ok: 1, fb: "Correcto. Por eso solo retira duplicados exactos." },
+    { t: "Solo RegistroID.", fb: "Sin argumentos compara todas las columnas. Para comparar una columna se escribe dropDuplicates(['RegistroID'])." },
+    { t: "Solo PesoKg.", fb: "No compara una sola columna." },
+    { t: "Las filas con el mismo JornadaID.", fb: "Eliminaría pesajes distintos de la misma jornada." }
+  ],
+  h: ["Fíjate en los paréntesis vacíos.", "Sin lista de columnas, Spark usa todas.", "Filas completas."],
+  exp: "Dos filas con el mismo RegistroID pero distinto peso no se retirarían: la celda lo vigila con un assert de unicidad.",
+  sol: "Filas completas." },
+
+e3_left: { c: "e3_dup", type: "choice", auto: 1,
+  q: "¿Por qué se une residuos con jornadas usando left join y no inner join?",
+  opts: [
+    { t: "Para conservar los pesajes sin jornada válida y poder rechazarlos con su motivo.", ok: 1, fb: "Correcto. Con inner join, el pesaje de la jornada 9999 desaparecería sin dejar rastro." },
+    { t: "Porque left join es más rápido.", fb: "La razón es de calidad, no de velocidad." },
+    { t: "Para duplicar los pesajes.", fb: "Un join bien hecho no debe duplicar: por eso se exige que JornadaID sea única." },
+    { t: "Porque inner join no existe en Spark.", fb: "Sí existe; se usa más adelante para añadir la región." }
+  ],
+  h: ["¿Qué pasa con un pesaje cuya jornada no existe?", "inner join solo conserva coincidencias.", "Para rechazarlo con motivo."],
+  exp: "En el left join, JornadaValida queda NULL si la jornada no existe; la regla «Jornada no existente» lo detecta.",
+  sol: "Para conservar pesajes sin jornada válida y rechazarlos con motivo." },
+
+e3_maestro: { c: "e3_dup", type: "choice",
+  q: "¿Por qué la celda comprueba que JornadaID sea única en jornadas antes de unir?",
+  opts: [
+    { t: "Si una jornada apareciera dos veces, cada pesaje se uniría dos veces y se multiplicarían los kilos.", ok: 1, fb: "Correcto. Una clave maestra única evita multiplicar filas." },
+    { t: "Para ordenar las jornadas por fecha.", fb: "La unicidad no ordena." },
+    { t: "Porque Spark no permite claves repetidas.", fb: "Spark sí las permite: por eso hay que comprobarlo." },
+    { t: "Para borrar jornadas antiguas.", fb: "No se borra nada del archivo." }
+  ],
+  h: ["Piensa en un join con una clave repetida.", "Cada coincidencia genera una fila.", "Se multiplicarían filas."],
+  exp: "Lo mismo vale para PlayaID en playas: los assert confirman 6 playas y 600 jornadas sin repetición.",
+  sol: "Para no multiplicar pesajes al unir." },
+
+e3_cards: { c: "e3_rules", type: "cards",
+  q: "Clasifica cada registro con el motivo que asignaría la regla. Luego revela la explicación de cada uno.",
+  cards: [
+    { rec: "RegistroID 1801 · Jornada 1 · PLASTICO · PesoKg NULL", a: "Peso ausente", why: "PesoKg está vacío: cumple la primera regla, isNull()." },
+    { rec: "RegistroID 1802 · Jornada 2 · VIDRIO · PesoKg −5.00", a: "Peso no positivo", why: "Un peso de −5 kg no es físicamente posible: PesoKg <= 0." },
+    { rec: "RegistroID 1803 · Jornada 3 · TipoResiduo NULL · 12.00", a: "Tipo no reconocido", why: "Sin tipo no se sabe qué residuo es; la regla acepta solo PLASTICO, VIDRIO u ORGANICO." },
+    { rec: "RegistroID 1804 · Jornada 9999 · PLASTICO · 18.00", a: "Jornada no existente", why: "La jornada 9999 no está en jornadas.csv: tras el left join, JornadaValida queda NULL." },
+    { rec: "RegistroID 7 · Jornada 3 · PLASTICO · 12.00", a: "ACEPTADO", why: "Peso positivo, tipo válido y jornada existente: pasa todas las reglas." },
+    { rec: "Ejemplo hipotético · Jornada 9999 · PLASTICO · PesoKg NULL", a: "Peso ausente", why: "Incumple dos reglas, pero when asigna el primer motivo aplicable: Peso ausente se evalúa antes." }
+  ],
+  opts: ["Peso ausente", "Peso no positivo", "Tipo no reconocido", "Jornada no existente", "ACEPTADO"],
+  h: ["Revisa las reglas en orden: peso vacío, peso ≤ 0, tipo, jornada.", "Un registro recibe solo el primer motivo que cumple.", "El caso hipotético tiene dos fallas; gana la primera regla."],
+  exp: "El orden de when importa: decide qué motivo se registra cuando un pesaje tiene varios problemas.",
+  sol: "1801 Peso ausente · 1802 Peso no positivo · 1803 Tipo no reconocido · 1804 Jornada no existente · 7 ACEPTADO · hipotético Peso ausente." },
+
+e3_todo2: { c: "e3_rules", type: "fill", lang: "py",
+  q: "TODO 2. Completa las dos condiciones de PesoKg.",
+  code: `clasificados = base.withColumn('Motivo',
+    F.when([[a]], 'Peso ausente')
+     .when([[b]], 'Peso no positivo')
+     .when(F.col('TipoResiduo').isNull() |
+           (~F.col('TipoResiduo').isin('PLASTICO', 'VIDRIO', 'ORGANICO')),
+           'Tipo no reconocido')
+     .when(F.col('JornadaValida').isNull(), 'Jornada no existente')
+     .otherwise('ACEPTADO'))`,
+  blanks: {
+    a: { acc: [/^(F\.)?COL\("PESOKG"\)\.ISNULL\(\)$/, /^BASE(\.PESOKG|\["PESOKG"\])\.ISNULL\(\)$/, /^F\.ISNULL\((F\.)?(COL\()?"PESOKG"\)?\)$/],
+         wrong: [[/==NONE|==NULL|ISNULL$/, "En PySpark se usa el método .isNull(), con paréntesis."], [/<=0|<0/, "Esa es la segunda regla; la primera detecta pesos vacíos."]], w: 26 },
+    b: { acc: [/^(F\.)?COL\("PESOKG"\)<=0(\.0+)?$/, /^BASE(\.PESOKG|\["PESOKG"\])<=0(\.0+)?$/, /^~\((F\.)?COL\("PESOKG"\)>0(\.0+)?\)$/],
+         wrong: [[/<0(\.0+)?$/, "Con < 0 un peso de 0 kg pasaría como válido. Usa <= 0."], [/ISNULL/, "Esa condición ya está en la primera regla."]], w: 22 }
+  },
+  h: ["La primera regla detecta peso vacío; la segunda, peso cero o negativo.", "Usa F.col('PesoKg') con el método .isNull() y con el operador <=.", "F.col('PesoKg').isNull()"],
+  exp: "Si un peso es NULL, la comparación <= 0 no da True ni False sino NULL. Por eso la regla de nulos va primero.",
+  sol: CODE(`F.when(F.col('PesoKg').isNull(), 'Peso ausente')
+ .when(F.col('PesoKg') <= 0, 'Peso no positivo')`) },
+
+e3_concil: { c: "e3_rate", type: "fields",
+  q: "Ejecuta la celda y completa la conciliación y la tasa.",
+  fields: [
+    { k: "d", l: "Duplicados retirados", kind: "num", v: 5 }, { k: "a", l: "Aceptados", kind: "num", v: 1800 },
+    { k: "r", l: "Rechazados", kind: "num", v: 4 }, { k: "den", l: "Denominador de la tasa", kind: "num", v: 1804 },
+    { k: "t", l: "Aceptación (%)", kind: "num", v: 99.78, tol: 0.011 }
+  ],
+  h: ["La identidad es 1809 = duplicados + aceptados + rechazados.", "La tasa se calcula entre registros únicos, no entre recibidos.", "1800 / 1804 × 100."],
+  exp: "Con 1809 de denominador la tasa sería 99.50 %: otro indicador. Por eso el denominador se escribe junto a la tasa.",
+  sol: "5 + 1800 + 4 = 1809 · aceptación = 1800 / 1804 × 100 = 99.78 %." },
+
+/* ----------------------------- EJERCICIO 04 ----------------------------- */
+e4_pred: { c: "e4_sql", type: "choice", auto: 1,
+  q: "Predicción: cada región tiene 600 pesajes válidos. ¿Cuál tendrá más toneladas?",
+  opts: [{ t: "Norte", fb: "Norte tiene 5.998 t, la menor de las tres." }, { t: "Centro", fb: "Centro tiene 11.998 t." }, { t: "Sur", ok: 1, fb: "Sur tiene 17.998 t." }, { t: "Las tres igual, porque tienen 600 pesajes", fb: "Igual cantidad de pesajes no implica igual peso: cada pesaje pesa distinto." }],
+  h: ["Contar pesajes no es lo mismo que sumar kilos.", "Mira el promedio de kilos de los pesajes de cada región.", "La región con pesajes más pesados."],
+  exp: "COUNT da 600 en las tres regiones; SUM(PesoKg) es lo que las distingue.",
+  sol: "Sur: 17.998 toneladas." },
+
+e4_todo3: { c: "e4_sql", type: "fill", lang: "sql",
+  q: "TODO 3. Completa la consulta de agregación.",
+  code: `SELECT Region,
+       [[a]] AS Registros,
+       [[b]] AS Kilos,
+       ROUND([[c]] / 1000.0, 3) AS Toneladas
+FROM residuos_limpios
+GROUP BY [[d]]
+ORDER BY Region`,
+  blanks: {
+    a: { acc: ["COUNT(*)", "COUNT(1)", "COUNT(REGISTROID)"], wrong: [[/^SUM/, "Registros cuenta pesajes; no suma."], [/NUMVOLUNTARIOS/, "No se cuentan voluntarios: cada fila es un pesaje."]], w: 9 },
+    b: { acc: ["SUM(PESOKG)"], wrong: [[/^COUNT/, "Kilos suma los pesos."], [/^AVG/, "AVG da el promedio, no el total."]], w: 12 },
+    c: { acc: ["SUM(PESOKG)"], wrong: [[/^PESOKG$/, "Primero suma los kilos de la región; luego divide entre 1000."]], w: 12 },
+    d: { acc: ["REGION"], wrong: [[/TIPORESIDUO|JORNADAID/, "El reporte pide una fila por región."]], w: 8 }
+  },
+  h: ["Cuentas pesajes, sumas kilos y conviertes a toneladas.", "COUNT(*), SUM(PesoKg) y GROUP BY la columna de región.", "Registros = COUNT(*)."],
+  exp: "Una tonelada son 1000 kg. Dividir entre 1000.0 (con decimal) conserva los decimales.",
+  sol: CODE(`SELECT Region, COUNT(*) AS Registros, SUM(PesoKg) AS Kilos,
+       ROUND(SUM(PesoKg) / 1000.0, 3) AS Toneladas
+FROM residuos_limpios
+GROUP BY Region
+ORDER BY Region`, "sql") },
+
+e4_funcs: { c: "e4_sql", type: "match",
+  q: "Relaciona cada parte de la consulta con su función.",
+  items: [
+    { l: "COUNT(*)", a: "Cuenta pesajes" }, { l: "SUM(PesoKg)", a: "Suma kilogramos" },
+    { l: "/ 1000.0", a: "Convierte kilos a toneladas" }, { l: "ROUND(…, 3)", a: "Redondea a tres decimales" },
+    { l: "GROUP BY Region", a: "Forma una fila por región" }
+  ],
+  choices: ["Convierte kilos a toneladas", "Cuenta pesajes", "Forma una fila por región", "Redondea a tres decimales", "Suma kilogramos"],
+  h: ["Son las mismas funciones del Tema 06.", "COUNT cuenta filas; SUM suma una columna.", "COUNT(*) → cuenta pesajes."],
+  exp: "La vista temporal residuos_limpios permite consultar el DataFrame con SQL, igual que viajes en el E01.",
+  sol: "COUNT → pesajes · SUM → kilos · /1000.0 → toneladas · ROUND → 3 decimales · GROUP BY → una fila por región." },
+
+e4_res: { c: "e4_sql", type: "fields",
+  q: "Registra las toneladas por región y el total.",
+  fields: [
+    { k: "n", l: "Norte (t)", kind: "num", v: 5.998, tol: 0.0005 }, { k: "c", l: "Centro (t)", kind: "num", v: 11.998, tol: 0.0005 },
+    { k: "s", l: "Sur (t)", kind: "num", v: 17.998, tol: 0.0005 }, { k: "t", l: "Total (t)", kind: "num", v: 35.994, tol: 0.0005 }
+  ],
+  h: ["Lee la columna Toneladas de resumen.show().", "El total es la suma de las tres regiones (las toneladas sí son aditivas).", "Norte = 5.998."],
+  exp: "Cada región tiene 600 pesajes; la diferencia está en los kilos.",
+  sol: "Norte 5.998 · Centro 11.998 · Sur 17.998 · Total 35.994 toneladas." },
+
+e4_granos: { c: "e4_grain", type: "match",
+  q: "Distingue las tres unidades de conteo.",
+  items: [
+    { l: "Pesaje", a: "Una fila de residuos: un tipo de residuo en una jornada" },
+    { l: "Jornada", a: "Una salida de limpieza en una playa y fecha" },
+    { l: "Participación de voluntarios", a: "NumVoluntarios de una jornada; no identifica personas únicas" }
+  ],
+  choices: ["NumVoluntarios de una jornada; no identifica personas únicas", "Una fila de residuos: un tipo de residuo en una jornada", "Una salida de limpieza en una playa y fecha"],
+  h: ["Cada una vive en un archivo distinto.", "Una jornada tiene tres pesajes.", "Pesaje → fila de residuos."],
+  exp: "Si una persona va a 10 jornadas, cuenta 10 participaciones. Los datos no permiten contar personas únicas.",
+  sol: "Pesaje → fila de residuos · Jornada → salida en playa y fecha · Participación → NumVoluntarios por jornada." },
+
+e4_vol: { c: "e4_grain", type: "fields", sim: "vol",
+  q: "Usa el simulador de la jornada 1 y responde.",
+  fields: [
+    { k: "a", l: "Voluntarios si se suman por pesaje (jornada 1)", kind: "num", v: 33 },
+    { k: "b", l: "Voluntarios reales de la jornada 1", kind: "num", v: 11 },
+    { k: "c", l: "Norte, sumando por pesaje", kind: "num", v: 8100 },
+    { k: "d", l: "Norte, agregando por jornada", kind: "num", v: 2700 }
+  ],
+  h: ["Cada jornada tiene 3 pesajes y cada uno repite NumVoluntarios.", "Sumar por pesaje multiplica por 3.", "11 × 3 = 33."],
+  exp: "Por eso la celda agrupa primero por JornadaID (y NumVoluntarios) y suma el plástico; recién entonces calcula la tasa.",
+  sol: "33 frente a 11 · Norte 8100 frente a 2700 participaciones." },
+
+e4_tasa: { c: "e4_grain", type: "fields",
+  q: "Calcula la tasa de la jornada 1: voluntarios por tonelada de plástico.",
+  fields: [{ k: "t", l: "VoluntariosPorTon = 11 × 1000 / 10 kg", kind: "num", v: 1100 }],
+  h: ["La fórmula multiplica por 1000 para pasar de kg a toneladas.", "11 voluntarios y 10 kg de plástico.", "11000 / 10."],
+  exp: "Una jornada con poco plástico da una tasa muy alta. Por eso las tasas de Norte, con pesajes livianos, son las más dispersas.",
+  sol: "1100 voluntarios por tonelada." },
+
+e4_mvr: { c: "e4_stats", type: "choice", auto: 1,
+  q: "En Norte, la media de las tasas es 749.90 y la razón entre totales (2700 × 1000 / 3900 kg) es 692.31. ¿Por qué difieren?",
+  opts: [
+    { t: "La media de tasas da el mismo peso a cada jornada; la razón divide los totales de toda la región.", ok: 1, fb: "Correcto. Son dos indicadores distintos: la guía usa la media de tasas por jornada." },
+    { t: "Por un error de redondeo.", fb: "La diferencia es de casi 60 unidades: no es redondeo." },
+    { t: "Porque faltan jornadas en una de las dos.", fb: "Ambas usan las 200 jornadas de Norte." },
+    { t: "Porque una cuenta personas y la otra no.", fb: "Ninguna cuenta personas únicas." }
+  ],
+  h: ["Piensa en una jornada con muy poco plástico.", "En la media cada jornada pesa igual; en la razón pesan los kilos.", "Promedio de tasas ≠ razón de totales."],
+  exp: "Hay que declarar cuál se calcula. MediaVolPorTon de la guía es la media de las tasas de las jornadas.",
+  sol: "La media promedia tasas por jornada; la razón divide totales." },
+
+e4_sd: { c: "e4_stats", type: "choice",
+  q: "¿Qué región tiene las tasas más dispersas y qué lo indica?",
+  opts: [
+    { t: "Norte: DesvMuestral 213.39, la mayor.", ok: 1, fb: "Correcto. Sus jornadas varían mucho de una a otra." },
+    { t: "Sur: tiene más toneladas.", fb: "La dispersión no depende del total recolectado. Sur tiene la menor desviación (26.86)." },
+    { t: "Centro: está en el medio.", fb: "Centro tiene 51.38." },
+    { t: "Ninguna: todas tienen 200 jornadas.", fb: "El número de jornadas no mide dispersión." }
+  ],
+  h: ["DesvMuestral mide cuánto se alejan las tasas de su media.", "Compara las tres desviaciones.", "La mayor es la de Norte."],
+  exp: "stddev_samp calcula la desviación estándar muestral (divide entre n − 1).",
+  sol: "Norte, con 213.39." },
+
+e4_nosum: { c: "e4_stats", type: "choice", auto: 1,
+  q: "¿Se pueden sumar las medias de las tres regiones (749.90 + 398.08 + 295.63) para obtener un indicador nacional?",
+  opts: [
+    { t: "No. Una media no es aditiva; habría que recalcularla con todas las jornadas.", ok: 1, fb: "Correcto. Lo mismo vale para las desviaciones." },
+    { t: "Sí, da 1443.61 voluntarios por tonelada.", fb: "Esa cifra no significa nada: suma tres promedios." },
+    { t: "Sí, si se divide entre 3.", fb: "El promedio de promedios tampoco es la media general si los grupos pesan distinto." },
+    { t: "Solo si las tres regiones tienen 200 jornadas.", fb: "Ni así: sumar medias no produce una media." }
+  ],
+  h: ["Recuerda el Tema 06: promedio de promedios.", "Las toneladas se suman; las medias no.", "No."],
+  exp: "En Power BI, MediaVolPorTon y DesvMuestral se muestran «sin resumir» por esta razón.",
+  sol: "No; las medias y desviaciones no son aditivas." },
+
+e4_imp: { c: "e4_stats", type: "fields",
+  q: "Clasificación de impacto (umbral didáctico de 60 kg por jornada). Completa.",
+  fields: [
+    { k: "a", l: "Jornadas de Alto Impacto", kind: "num", v: 303 }, { k: "b", l: "Jornadas de Bajo Impacto", kind: "num", v: 297 },
+    { k: "n", l: "Jornadas de Alto Impacto en Norte", kind: "num", v: 0 }
+  ],
+  h: ["Lee la salida de impacto.groupBy('Impacto').count().", "Las dos clases suman 600.", "Norte no tiene jornadas de 60 kg o más."],
+  exp: "60 kg es un umbral didáctico; no es una norma ambiental.",
+  sol: "303 Alto · 297 Bajo · Norte 0 Alto (Centro 103, Sur 200)." },
+
+e4_interp: { c: "e4_stats", type: "text",
+  q: "Interpretación: ¿por qué no se suma NumVoluntarios directamente en cada fila de residuos? ¿Qué representa DesvMuestral?",
+  parts: [
+    { k: "a", l: "NumVoluntarios", rub: [{ any: ["repit", "tres", "3 ", "triplic", "multiplic", "jornada", "cada pesaje", "duplic"], miss: "Explica que cada jornada tiene 3 pesajes y el valor se repetiría." }] },
+    { k: "b", l: "DesvMuestral", rub: [{ any: ["dispers", "variab", "aleja", "variacion", "desvia"], miss: "Explica que mide la dispersión de las tasas de las jornadas alrededor de su media." }] }
+  ],
+  h: ["Usa el simulador de la jornada 1.", "NumVoluntarios es un dato de la jornada, no del pesaje.", "DesvMuestral mide cuánto varían las tasas."],
+  exp: "El grano correcto para la tasa es la jornada: primero se suma su plástico y luego se calcula una tasa por jornada.",
+  sol: "Cada jornada tiene tres pesajes y NumVoluntarios se repetiría tres veces. DesvMuestral mide cuánto se dispersan las tasas de voluntarios por tonelada de las jornadas alrededor de su media." },
+
+/* ----------------------------- EJERCICIO 05 ----------------------------- */
+e5_pred: { c: "e5_parquet", type: "choice", auto: 1,
+  q: "Predicción: detalle.write.parquet('salidas_tema07/detalle_parquet'). ¿Qué aparece en disco?",
+  opts: [
+    { t: "Una carpeta con uno o varios archivos part-* y archivos de control.", ok: 1, fb: "Correcto. Spark escribe por particiones." },
+    { t: "Un único archivo detalle_parquet.csv.", fb: "Parquet no es CSV, y Spark escribe una carpeta." },
+    { t: "Una hoja de Excel.", fb: "Parquet es un formato columnar, no una hoja de cálculo." },
+    { t: "Nada hasta cerrar Colab.", fb: "write es una acción: escribe en ese momento." }
+  ],
+  h: ["Spark trabaja por particiones.", "Cada tarea escribe su parte.", "Una carpeta."],
+  exp: "Por eso el cuaderno empaqueta la carpeta en resultados_tema07.zip para descargarla.",
+  sol: "Una carpeta con archivos part-* y archivos de control." },
+
+e5_pq: { c: "e5_parquet", type: "match",
+  q: "¿Parquet o CSV?",
+  items: [
+    { l: "Conserva el tipo de cada columna", a: "Parquet" }, { l: "Organiza los datos por columnas", a: "Parquet" },
+    { l: "Spark lo escribe como carpeta", a: "Parquet" }, { l: "Lleva solo 3 filas agregadas a Power BI", a: "CSV" },
+    { l: "Se lee como texto y hay que revisar los decimales al importar", a: "CSV" }
+  ],
+  choices: ["CSV", "Parquet"],
+  h: ["Parquet es para conservar y reutilizar; el CSV, para llevar un resumen.", "El CSV no guarda tipos: Power BI los infiere.", "Las tres primeras son de Parquet."],
+  exp: "Al releer el Parquet se obtienen las 1800 filas con sus tipos, sin volver a aplicar el esquema.",
+  sol: "Parquet: tipos, columnar, carpeta · CSV: 3 filas para Power BI, se lee como texto." },
+
+e5_relee: { c: "e5_parquet", type: "fields",
+  q: "Controles del E05 en Colab.",
+  fields: [{ k: "a", l: "Filas al releer el Parquet", kind: "num", v: 1800 }, { k: "b", l: "Filas de resumen_region.csv (sin encabezado)", kind: "num", v: 3 }],
+  h: ["El assert compara releido.count() con un valor.", "El CSV tiene una fila por región.", "1800 y 3."],
+  exp: "collect() solo se usa sobre las 3 filas del resumen; nunca sobre el detalle masivo.",
+  sol: "1800 filas releídas · 3 filas en el CSV." },
+
+e5_report: { c: "e5_report", type: "fields", sim: "report",
+  q: "Usa los filtros del reporte simulado y registra lo que muestra la tarjeta.",
+  fields: [
+    { k: "a", l: "Toneladas con las 3 regiones", kind: "num", v: 35.994, tol: 0.0005 },
+    { k: "b", l: "Toneladas solo con Norte y Centro", kind: "num", v: 17.996, tol: 0.0005 },
+    { k: "c", l: "Región con más toneladas", kind: "select", opts: ["Norte", "Centro", "Sur"], ans: ["Sur"] }
+  ],
+  h: ["Desmarca Sur en el filtro de región.", "La tarjeta suma las toneladas visibles.", "5.998 + 11.998."],
+  exp: "La tarjeta puede sumar toneladas porque son aditivas. En la tabla, la media y la desviación se muestran sin resumir.",
+  sol: "35.994 t · Norte + Centro = 17.996 t · Sur." },
+
+e5_todo4: { c: "e5_report", type: "text",
+  q: "TODO 4 (dos líneas): ¿qué decisión permite apoyar el gráfico y qué conclusión no se puede deducir del peso recolectado?",
+  parts: [
+    { k: "a", l: "Decisión que apoya", rub: [{ any: ["recurso", "jornada", "transporte", "planific", "distribu", "asign", "logistic", "camion", "voluntari", "equipo"], miss: "Nombra una decisión operativa: distribuir jornadas, recursos o transporte." }] },
+    { k: "b", l: "Lo que no se puede concluir", rub: [{ any: ["contamin", "causa", "esfuerzo", "cobertura", "no permite", "no se puede", "no demuestra", "mas sucia"], miss: "Explica que el peso recolectado no mide cuál región está más contaminada." }] }
+  ],
+  h: ["El gráfico muestra cuánto se recogió, no cuánto hay.", "El peso depende del esfuerzo y de la cobertura de las jornadas.", "No permite afirmar qué región está más contaminada."],
+  exp: "Peso recolectado e índice de contaminación son variables diferentes. Usa unidades en títulos y ejes.",
+  sol: "Apoya la distribución de jornadas, recursos o transporte por región. No permite afirmar qué región está más contaminada ni demuestra causalidad: el peso depende del esfuerzo y la cobertura." },
+
+e5_reto_pred: { c: "e5_reto", type: "choice", auto: 1,
+  q: "En la consulta del reto, ¿dónde va el filtro TipoResiduo = 'PLASTICO'?",
+  opts: [
+    { t: "En WHERE, antes de GROUP BY.", ok: 1, fb: "Correcto: se filtran pesajes y luego se agrupan." },
+    { t: "En ORDER BY.", fb: "ORDER BY solo ordena." },
+    { t: "Después de exportar el CSV.", fb: "El CSV ya debe tener solo plástico." },
+    { t: "No hace falta filtrar.", fb: "Sin filtro obtendrías todos los residuos (35.994 t)." }
+  ],
+  h: ["El filtro afecta a filas individuales.", "WHERE actúa antes de agrupar; HAVING, después.", "WHERE."],
+  exp: "Filtrar antes de agrupar mantiene el grano por pesaje para COUNT y AVG.",
+  sol: "En WHERE, antes de GROUP BY." },
+
+e5_reto: { c: "e5_reto", type: "fields", sim: "reto",
+  q: "Controles del estudiante para el reto.",
+  fields: [
+    { k: "e", l: "Filas de entrada (Parquet)", kind: "num", v: 1800 }, { k: "s", l: "Filas de salida", kind: "num", v: 3 },
+    { k: "p", l: "Suma de Pesajes de plástico", kind: "num", v: 600 },
+    { k: "r", l: "Región con más plástico", kind: "select", opts: ["Norte", "Centro", "Sur"], ans: ["Sur"] }
+  ],
+  h: ["Parte del Parquet limpio, no del CSV recibido.", "Hay 200 pesajes de plástico por región.", "1800 · 3 · 600."],
+  exp: "Si la suma de pesajes no es 600, revisa el filtro: quizá falta WHERE o escribiste mal PLASTICO.",
+  sol: "1800 de entrada · 3 de salida · 600 pesajes · Sur." },
+
+e5_reto_txt: { c: "e5_reto", type: "text",
+  q: "Reto, respuesta de dos líneas: ¿qué región concentra más plástico recolectado y por qué su total no se compara como si fuera el indicador de 35.994 t?",
+  parts: [{ k: "t", l: "Tu respuesta", rub: [
+    { any: ["sur"], miss: "Nombra la región con más plástico." },
+    { any: ["subconjunto", "solo plastico", "filtr", "parte", "todos los residuos", "todos los tipos", "un tipo"], miss: "Explica que el total de plástico es una parte (subconjunto) del total de todos los residuos." }] }],
+  h: ["Revisa la columna ToneladasPlastico.", "35.994 t incluye plástico, vidrio y orgánico.", "«Sur… el plástico es un subconjunto…»"],
+  exp: "La diferencia entre totales es de contexto de filtro, no pérdida de registros.",
+  sol: "Sur concentra más plástico (11.900 t). El total de plástico (23.700 t) es un subconjunto; 35.994 t incluye todos los tipos de residuo." }
+};
+
+/* =======================================================================
+   2. NAVEGACIÓN: SESIONES, MÓDULOS Y PANTALLAS
+   Bloques: sit Situación · con Concepto · a (as: pred|int|res) actividad
+            sim interacción · res Resultado · expl Explicación (desplegable)
+            colab En Colab · doc Solo docente · cierre · fuentes
+   ======================================================================= */
+const MODS = [
+  { id: "s1p", ses: "Sesión 1 · 120 min", n: "P", t: "Preparación", s: "20 min" },
+  { id: "e1", n: "01", t: "Ejercicio 01", s: "MoviTrack con DataFrame · 40 min" },
+  { id: "e2", n: "02", t: "Ejercicio 02", s: "RDD y particiones · 45 min" },
+  { id: "s1c", n: "✓", t: "Cierre sesión 1", s: "15 min" },
+  { id: "s2p", ses: "Sesión 2 · 120 min", n: "P", t: "Arranque", s: "10 min" },
+  { id: "e3", n: "03", t: "Ejercicio 03", s: "Calidad de datos · 35 min" },
+  { id: "e4", n: "04", t: "Ejercicio 04", s: "Indicadores · 35 min" },
+  { id: "e5", n: "05", t: "Ejercicio 05", s: "Parquet, reporte y reto · 30 min" },
+  { id: "s2c", n: "✓", t: "Cierre sesión 2", s: "10 min" },
+  { id: "doc", ses: "Complementos", n: "D", t: "Ampliación docente", s: "Sensores · opcional", docOnly: 1 },
+  { id: "src", n: "i", t: "Fuentes", s: "Materiales y documentación" }
+];
+
+const CODE_PASO0 = CODE(`# Paso 0. Instalar la versión utilizada en esta práctica.
+%pip install -q pyspark==4.0.3`) + CODE(`# Paso 0. Iniciar Spark Classic en una sola máquina con dos hilos.
+from pyspark.sql import SparkSession, functions as F, types as T
+spark = (SparkSession.builder.appName('UPN_Tema07')
+         .master('local[2]')
+         .config('spark.sql.shuffle.partitions', '2')
+         .config('spark.sql.session.timeZone', 'UTC')
+         .getOrCreate())
+spark.sparkContext.setLogLevel('ERROR')
+print('Spark:', spark.version)
+print('Modo:', spark.sparkContext.master)
+assert spark.range(5).count() == 5
+print('Prueba de arranque correcta')`);
+
+const SCREENS = [
+/* ================= SESIÓN 1 ================= */
+{ id: "s1a", mod: "s1p", t: "Del Tema 06 a Spark", sub: "Mapa de la práctica",
+  blocks: [
+  { k: "sit", h: "Lo que ya sabemos", html: `<p>En el Tema 06 consultamos MoviTrack con SQL Server y herramientas analíticas: <b>6 viajes y S/ 120.00</b>. Hoy usamos <b>Apache Spark</b> desde un cuaderno de <b>Google Colab</b>. Primero comprobamos que Spark conserva esos controles; luego lo usamos con datos nuevos de <b>Ocean Clean-Up Peru</b>.</p>` },
+  { k: "con", h: "Ruta de las dos sesiones", html: `<div class="tw"><table class="rs"><thead><tr><th>Sesión</th><th>Bloque</th><th class="n">Min</th><th>Qué haremos</th></tr></thead><tbody>
+    <tr><td>1</td><td>Preparación</td><td class="n">20</td><td>Abrir Colab, instalar PySpark, iniciar Spark y subir datos_tema07.zip</td></tr>
+    <tr><td>1</td><td>Ejercicio 01</td><td class="n">40</td><td>Leer MoviTrack con esquema y repetir la consulta con Spark SQL</td></tr>
+    <tr><td>1</td><td>Ejercicio 02</td><td class="n">45</td><td>RDD, particiones, transformaciones y acciones (TODO 1)</td></tr>
+    <tr><td>1</td><td>Cierre</td><td class="n">15</td><td>Evidencias e interpretación</td></tr>
+    <tr><td>2</td><td>Arranque</td><td class="n">10</td><td>Repetir el Paso 0 (la sesión 2 es independiente)</td></tr>
+    <tr><td>2</td><td>Ejercicio 03</td><td class="n">35</td><td>Duplicados, reglas de calidad y conciliación (TODO 2)</td></tr>
+    <tr><td>2</td><td>Ejercicio 04</td><td class="n">35</td><td>Toneladas por región, tasas y estadística (TODO 3)</td></tr>
+    <tr><td>2</td><td>Ejercicio 05</td><td class="n">30</td><td>Parquet, reporte en Power BI (TODO 4) y reto integrador de 15 min</td></tr>
+    <tr><td>2</td><td>Cierre</td><td class="n">10</td><td>Evidencias e interpretación</td></tr></tbody></table></div>` },
+  { k: "expl", h: "Por qué Google Colab", html: `<ul><li>No se instala nada en las PC del laboratorio: el cuaderno instala PySpark 4.0.3 y Java 17 en una máquina temporal.</li><li>Todos trabajan con la misma versión y obtienen los mismos controles.</li><li>Solo se necesita navegador y cuenta de Google; se puede repasar en casa.</li><li>Límites: la máquina es temporal (descarga tus resultados) y <code>local[2]</code> no es un clúster real.</li></ul>` }
+  ] },
+{ id: "s1b", mod: "s1p", t: "Las piezas del entorno", sub: "Conceptos y Paso 0",
+  blocks: [
+  { k: "sit", h: "Antes de escribir código", html: `<p>Vas a ejecutar celdas de Python en Colab que le piden trabajo a Spark. Ubica cada pieza para saber qué falla cuando algo falla.</p>` },
+  { k: "sim", sim: "env", h: "Mapa del entorno: pulsa cada pieza" },
+  { k: "a", id: "s1_herr", as: "int" },
+  { k: "a", id: "s1_local", as: "pred" },
+  { k: "colab", h: "Paso 0 en Colab", html: `<p>Ejecuta en orden: instalación, verificación de Java 17 (celda completa del cuaderno), arranque de Spark y carga de <b>datos_tema07.zip sin descomprimir</b>.</p>${CODE_PASO0}` },
+  { k: "a", id: "s1_arranque", as: "res" }
+  ] },
+{ id: "e1a", mod: "e1", t: "MoviTrack como DataFrame", sub: "Datos y esquema",
+  blocks: [
+  { k: "sit", h: "Situación", html: `<p>La gerencia necesita que el cambio de herramienta mantenga los resultados conocidos. Cargaremos <code>movitrack_control.csv</code>: una <b>copia didáctica</b> de 6 viajes con los mismos totales del Tema 06. No es una exportación de tu servidor.</p>` },
+  { k: "con", h: "DataFrame y esquema explícito", html: `<p>Un <b>DataFrame</b> agrega a los datos nombres de columna y tipos. Con <code>.schema(...)</code> declaramos los tipos, como en un <code>CREATE TABLE</code>, en lugar de dejar que Spark los adivine.</p>` },
+  { k: "a", id: "e1_pred", as: "pred" },
+  { k: "sim", sim: "viajes", h: "Explora el DataFrame" },
+  { k: "a", id: "e1_tipos", as: "int" },
+  { k: "a", id: "e1_nullable", as: "int" }
+  ] },
+{ id: "e1b", mod: "e1", t: "La misma consulta, otro motor", sub: "Spark SQL",
+  blocks: [
+  { k: "con", h: "Vista temporal y Spark SQL", html: `<p><code>createOrReplaceTempView('viajes')</code> registra el DataFrame con un nombre para consultarlo con SQL. La vista existe mientras dure la sesión de Spark.</p>` },
+  { k: "colab", h: "Pasos 1 y 2 del Ejercicio 01", html: CODE(`# Paso 1. Cargar una copia didáctica del detalle de MoviTrack.
+esquema_viajes = ('CodigoViaje STRING, Fecha DATE, Servicio STRING, '
+                  'Distrito STRING, Importe DECIMAL(12,2)')
+viajes = (spark.read.option('header', True).schema(esquema_viajes)
+          .csv(str(BASE / 'movitrack_control.csv')))
+viajes.printSchema()
+viajes.show()
+
+# Paso 2. Contrastar los mismos indicadores conocidos.
+viajes.createOrReplaceTempView('viajes')
+spark.sql("""
+SELECT Distrito, COUNT(*) AS Viajes, SUM(Importe) AS ImporteTotal
+FROM viajes
+GROUP BY Distrito
+ORDER BY Distrito
+""").show()
+assert viajes.count() == 6
+assert float(viajes.agg(F.sum('Importe')).first()[0]) == 120.0`) },
+  { k: "a", id: "e1_res", as: "res" },
+  { k: "a", id: "e1_cambio", as: "pred" },
+  { k: "a", id: "e1_rend", as: "int" },
+  { k: "expl", h: "Por qué un CSV didáctico", html: `<p>Seis filas permiten verificar a mano cada resultado. Si Spark devuelve 6 y 120.00, sabemos que la lectura, los tipos y la consulta están bien antes de trabajar con 1809 registros desconocidos. Esta muestra no demuestra una mejora de rendimiento frente a SQL Server.</p>` }
+  ] },
+{ id: "e2a", mod: "e2", t: "Tuplas, lambdas y particiones", sub: "RDD",
+  blocks: [
+  { k: "sit", h: "Situación", html: `<p>Para entender cómo trabaja Spark por dentro, repartimos seis pares <code>(distrito, importe)</code> en dos particiones.</p>` },
+  { k: "con", h: "RDD", html: `<p>Un <b>RDD</b> es una colección <b>inmutable</b> dividida en <b>particiones</b>. Inmutable significa que no se modifica: cada operación crea un RDD nuevo y el original se conserva.</p>` },
+  { k: "sim", sim: "tuplas", h: "Inspecciona las tuplas" },
+  { k: "a", id: "e2_lambda", as: "int" },
+  { k: "a", id: "e2_pred_part", as: "pred" },
+  { k: "a", id: "e2_niveles", as: "int" },
+  { k: "colab", h: "Paso 1 del Ejercicio 02", html: CODE(`datos = [('Comas', 15), ('Comas', 20), ('Los Olivos', 10),
+         ('Los Olivos', 20), ('Comas', 30), ('Independencia', 25)]
+rdd = spark.sparkContext.parallelize(datos, 2)
+print('Particiones:', rdd.getNumPartitions())
+# glom agrupa por partición; collect trae la pequeña muestra al driver.
+print('Distribución:', rdd.glom().collect())`) }
+  ] },
+{ id: "e2b", mod: "e2", t: "Plan perezoso y acciones", sub: "Transformaciones y acciones",
+  blocks: [
+  { k: "con", h: "Transformación y acción", html: `<div class="two"><div><b>Transformación</b><p><code>filter</code>, <code>map</code>, <code>reduceByKey</code>: describen un RDD nuevo. Spark solo las anota en un plan.</p></div><div><b>Acción</b><p><code>count</code>, <code>sum</code>, <code>collect</code>: piden un resultado y desencadenan el trabajo necesario.</p></div></div>` },
+  { k: "a", id: "e2_pred_lazy", as: "pred" },
+  { k: "a", id: "e2_plan", as: "int" },
+  { k: "expl", h: "Qué hace reduceByKey", html: `<p>Primero suma dentro de cada partición (Comas 35 en la partición 0 y 30 en la 1). Luego <b>redistribuye por clave</b> (<i>shuffle</i>) para que los valores de Comas lleguen juntos y se sumen: 35 + 30 = 65. El shuffle mueve datos entre particiones y es la operación más costosa en Spark.</p><p><small>La animación ilustra el proceso; no es una captura de una ejecución real de Spark.</small></p>` }
+  ] },
+{ id: "e2c", mod: "e2", t: "TODO 1 e interpretación", sub: "TODO 1",
+  blocks: [
+  { k: "a", id: "e2_todo1", as: "int" },
+  { k: "colab", h: "Acciones y comprobación en Colab", html: CODE(`# Estas acciones solicitan resultados y desencadenan trabajo.
+print('Viajes de Comas:', comas.count())
+print('Importe de Comas:', importes_comas.sum())
+print('Totales:', sorted(por_distrito.collect()))
+print(por_distrito.toDebugString().decode())   # linaje del RDD agregado
+
+assert comas.count() == 3
+assert importes_comas.sum() == 65
+assert dict(por_distrito.collect()) == {
+    'Comas': 65, 'Independencia': 25, 'Los Olivos': 30}
+print('TODO 1 verificado')`) + `<p><small>Sugerencia: imprimir <code>por_distrito.toDebugString()</code> muestra el linaje con la etapa de reduceByKey; <code>rdd.toDebugString()</code> solo muestra el RDD original.</small></p>` },
+  { k: "a", id: "e2_res", as: "res" },
+  { k: "a", id: "e2_acciones", as: "int" },
+  { k: "a", id: "e2_interp", as: "int" }
+  ] },
+{ id: "s1z", mod: "s1c", t: "Cierre de la sesión 1", sub: "Evidencias", blocks: [{ k: "cierre", ses: 1 }] },
+
+/* ================= SESIÓN 2 ================= */
+{ id: "s2a", mod: "s2p", t: "Arranque y datos de Ocean Clean-Up", sub: "Arranque",
+  blocks: [
+  { k: "sit", h: "Situación", html: `<p>La ONG Ocean Clean-Up Peru (caso ficticio, datos sintéticos) registra pesajes de residuos en jornadas de limpieza. Antes de calcular indicadores hay que depurar los datos. La sesión 2 es <b>independiente</b>: abre su cuaderno, repite el Paso 0 y sube de nuevo datos_tema07.zip.</p>` },
+  { k: "con", h: "Archivos, relaciones y grano", html: relSVG() + `<p><small>NumVoluntarios cuenta participaciones en una jornada; no identifica personas únicas. Las regiones Norte, Centro y Sur son zonas didácticas.</small></p>` },
+  { k: "a", id: "s2_grano", as: "pred" },
+  { k: "a", id: "s2_cuentas", as: "int" },
+  { k: "colab", h: "Paso 0 de la sesión 2", html: CODE_PASO0 }
+  ] },
+{ id: "e3a", mod: "e3", t: "Duplicados y uniones", sub: "Pasos 1 a 3",
+  blocks: [
+  { k: "sit", h: "Situación", html: `<p>Llegaron 1809 filas: 1800 pesajes válidos, <b>5 duplicados exactos</b> y <b>4 registros defectuosos</b>. No se borra ni modifica el archivo de entrada: se separa lo que entra al análisis.</p>` },
+  { k: "con", h: "El recorrido de calidad", html: funnelHTML() },
+  { k: "a", id: "e3_pred", as: "pred" },
+  { k: "a", id: "e3_dup", as: "int" },
+  { k: "a", id: "e3_maestro", as: "int" },
+  { k: "a", id: "e3_left", as: "int" },
+  { k: "colab", h: "Pasos 2 y 3 del Ejercicio 03", html: CODE(`unicos = residuos.dropDuplicates()
+print('Recibidos:', residuos.count())
+print('Sin duplicados exactos:', unicos.count())
+
+# Mantener un solo registro maestro por clave evita multiplicar los hechos.
+assert playas.count() == playas.select('PlayaID').distinct().count() == 6
+assert jornadas.count() == jornadas.select('JornadaID').distinct().count() == 600
+assert unicos.count() == unicos.select('RegistroID').distinct().count()
+
+maestro = jornadas.withColumnRenamed('JornadaID', 'JornadaValida')
+base = unicos.join(maestro,
+    unicos.JornadaID == maestro.JornadaValida, 'left')`) }
+  ] },
+{ id: "e3b", mod: "e3", t: "Reglas de calidad y TODO 2", sub: "TODO 2",
+  blocks: [
+  { k: "con", h: "when asigna el primer motivo aplicable", html: `<p>Las reglas se evalúan en orden: <b>Peso ausente → Peso no positivo → Tipo no reconocido → Jornada no existente</b>. Si ninguna se cumple, el registro queda <b>ACEPTADO</b>.</p>` },
+  { k: "a", id: "e3_cards", as: "int" },
+  { k: "a", id: "e3_todo2", as: "int" },
+  { k: "a", id: "e3_concil", as: "res" },
+  { k: "res", h: "Conciliación", html: `<div class="out">recibidos 1809 = duplicados 5 + aceptados 1800 + rechazados 4\naceptación = <b>1800 / 1804</b> × 100 = <b>99.78 %</b>   ← denominador: registros únicos</div><p style="margin-top:8px"><small>Cada uno de los cuatro motivos tiene 1 rechazo.</small></p>` }
+  ] },
+{ id: "e4a", mod: "e4", t: "Toneladas por región", sub: "TODO 3",
+  blocks: [
+  { k: "sit", h: "Situación", html: `<p>La coordinación pide toneladas por región. Consultamos con Spark SQL la vista <code>residuos_limpios</code>, que tiene solo los 1800 pesajes aceptados con su región.</p>` },
+  { k: "a", id: "e4_pred", as: "pred" },
+  { k: "a", id: "e4_todo3", as: "int" },
+  { k: "a", id: "e4_funcs", as: "int" },
+  { k: "sim", sim: "ton", h: "Resultado del resumen" },
+  { k: "a", id: "e4_res", as: "res" }
+  ] },
+{ id: "e4b", mod: "e4", t: "Pesaje, jornada y voluntarios", sub: "Grano",
+  blocks: [
+  { k: "con", h: "Cambiar el grano antes de calcular la tasa", html: `<p>NumVoluntarios es un dato de la <b>jornada</b>. En el detalle, cada jornada aparece en <b>tres pesajes</b>, así que el valor se repite. Para la tasa de voluntarios por tonelada de plástico, primero se suma el plástico <b>por jornada</b>.</p>` },
+  { k: "a", id: "e4_granos", as: "int" },
+  { k: "a", id: "e4_vol", as: "int" },
+  { k: "a", id: "e4_tasa", as: "res" },
+  { k: "colab", h: "Paso 2 del Ejercicio 04", html: CODE(`plasticos = (detalle.filter(F.col('TipoResiduo') == 'PLASTICO')
+             .groupBy('JornadaID', 'Region', 'NumVoluntarios')
+             .agg(F.sum('PesoKg').alias('PlasticoKg')))
+tasas = (plasticos.filter(F.col('PlasticoKg') > 0)
+         .withColumn('VoluntariosPorTon',
+             F.col('NumVoluntarios') * 1000.0 / F.col('PlasticoKg')))
+estadistica = (tasas.groupBy('Region').agg(
+    F.count('*').alias('Jornadas'),
+    F.round(F.avg('VoluntariosPorTon'), 2).alias('MediaVolPorTon'),
+    F.round(F.stddev_samp('VoluntariosPorTon'), 2).alias('DesvMuestral')))
+estadistica.orderBy('Region').show()`) }
+  ] },
+{ id: "e4c", mod: "e4", t: "Media, desviación e impacto", sub: "Estadística",
+  blocks: [
+  { k: "sim", sim: "stats", h: "Tasas por región" },
+  { k: "a", id: "e4_mvr", as: "pred" },
+  { k: "a", id: "e4_sd", as: "int" },
+  { k: "a", id: "e4_nosum", as: "int" },
+  { k: "a", id: "e4_imp", as: "res" },
+  { k: "a", id: "e4_interp", as: "int" },
+  { k: "colab", h: "Leer el plan con explain (evidencia)", html: CODE(`resumen.explain(mode='formatted')`) + `<p>En la salida, anota al menos una operación:</p><ul><li><b>HashAggregate</b> aparece dos veces: suma parcial en cada partición y suma final.</li><li><b>Exchange hashpartitioning(Region, 2)</b>: redistribución por clave entre las dos agregaciones, como en reduceByKey.</li><li><b>BroadcastHashJoin</b>: la tabla pequeña (jornadas o playas) se copia a cada tarea para unir sin redistribuir el detalle.</li><li><b>Scan csv</b>: lectura del archivo con el esquema declarado.</li></ul>` }
+  ] },
+{ id: "e5a", mod: "e5", t: "Conservar en Parquet", sub: "Parquet y CSV",
+  blocks: [
+  { k: "sit", h: "Situación", html: `<p>Hay que conservar el detalle limpio para reutilizarlo y llevar un resumen pequeño a Power BI.</p>` },
+  { k: "con", h: "Recorrido de los resultados", html: pipeSVG() },
+  { k: "a", id: "e5_pred", as: "pred" },
+  { k: "sim", sim: "parquet", h: "Carpeta Parquet y archivo CSV" },
+  { k: "a", id: "e5_pq", as: "int" },
+  { k: "a", id: "e5_relee", as: "res" },
+  { k: "colab", h: "Pasos 1 y 2 del Ejercicio 05", html: CODE(`SALIDA = Path.cwd() / 'salidas_tema07'
+SALIDA.mkdir(exist_ok=True)
+detalle.write.mode('overwrite').parquet(str(SALIDA / 'detalle_parquet'))
+releido = spark.read.parquet(str(SALIDA / 'detalle_parquet'))
+assert releido.count() == 1800
+
+# collect() se limita a este resumen pequeño; nunca al detalle masivo.
+panel = resumen.join(estadistica, 'Region').orderBy('Region')
+archivo = SALIDA / 'resumen_region.csv'
+with archivo.open('w', newline='', encoding='utf-8-sig') as f:
+    escritor = csv.writer(f)
+    escritor.writerow(panel.columns)
+    escritor.writerows(tuple(fila) for fila in panel.collect())`) }
+  ] },
+{ id: "e5b", mod: "e5", t: "Reporte en Power BI", sub: "TODO 4",
+  blocks: [
+  { k: "con", h: "Pasos en Power BI Desktop", html: `<ol><li>Obtener datos → Texto/CSV → resumen_region.csv → Transformar datos.</li><li>Region texto; Registros y Jornadas enteros; Kilos, Toneladas, MediaVolPorTon y DesvMuestral decimales. Si el punto se interpreta mal: Usar configuración regional → Inglés (Estados Unidos).</li><li>Barras: Region en el eje, Toneladas en valores, orden descendente.</li><li>Título: «¿En qué región se recolectó más peso de residuos?». Tarjeta con la suma de Toneladas y tabla con Region, MediaVolPorTon y DesvMuestral sin resumir.</li><li>Guarda OceanCleanUp_Tema07.pbix.</li></ol>` },
+  { k: "a", id: "e5_report", as: "int" },
+  { k: "a", id: "e5_todo4", as: "int" }
+  ] },
+{ id: "e5c", mod: "e5", t: "Reto integrador: plástico por región", sub: "Reto · 15 min",
+  blocks: [
+  { k: "sit", h: "Situación", html: `<p>La coordinación pide un resumen <b>solo de PLASTICO</b> para planificar su transporte. Resuélvelo desde el Parquet limpio, integrando lo practicado en E03, E04 y E05.</p>` },
+  { k: "con", h: "Pasos del reto", html: `<ol><li>Lee <code>salidas_tema07/detalle_parquet</code> en <code>base_reto</code> y comprueba 1800 filas.</li><li>Registra la vista <code>reto_residuos</code>; filtra <code>TipoResiduo = 'PLASTICO'</code> y devuelve una fila por Region.</li><li>Muestra Region, Pesajes, ToneladasPlastico (3 decimales) y PromedioKgPorPesaje (2 decimales). Ordena por toneladas de mayor a menor.</li><li>Comprueba 3 regiones y 600 pesajes. Exporta <code>reto_plastico.csv</code> y descárgalo.</li><li>Escribe dos líneas de interpretación.</li></ol>` },
+  { k: "a", id: "e5_reto_pred", as: "pred" },
+  { k: "a", id: "e5_reto", as: "int" },
+  { k: "a", id: "e5_reto_txt", as: "int" },
+  { k: "doc", h: "Controles y solución docente del reto", html: `<div class="tw"><table class="rs"><thead><tr><th>Region</th><th class="n">Pesajes</th><th class="n">ToneladasPlastico</th><th class="n">PromedioKgPorPesaje</th></tr></thead><tbody>
+    <tr><td>Sur</td><td class="n">200</td><td class="n">11.900</td><td class="n">59.50</td></tr><tr><td>Centro</td><td class="n">200</td><td class="n">7.900</td><td class="n">39.50</td></tr><tr><td>Norte</td><td class="n">200</td><td class="n">3.900</td><td class="n">19.50</td></tr>
+    <tr class="tot"><td>Total plástico</td><td class="n">600</td><td class="n">23.700</td><td></td></tr></tbody></table></div>
+    <p>23.700 t es un subconjunto de 35.994 t (todos los residuos): la diferencia es de contexto de filtro, no pérdida de registros.</p>` + CODE(`base_reto = spark.read.parquet(str(SALIDA / 'detalle_parquet'))
+assert base_reto.count() == 1800
+base_reto.createOrReplaceTempView('reto_residuos')
+reto = spark.sql("""
+SELECT Region,
+       COUNT(*) AS Pesajes,
+       ROUND(SUM(PesoKg) / 1000.0, 3) AS ToneladasPlastico,
+       ROUND(AVG(PesoKg), 2) AS PromedioKgPorPesaje
+FROM reto_residuos
+WHERE TipoResiduo = 'PLASTICO'
+GROUP BY Region
+ORDER BY ToneladasPlastico DESC, Region
+""")
+reto.show()
+assert reto.count() == 3
+assert reto.agg(F.sum('Pesajes')).first()[0] == 600`, "py", "Solución docente · celda de Colab") }
+  ] },
+{ id: "s2z", mod: "s2c", t: "Cierre de la sesión 2", sub: "Evidencias", blocks: [{ k: "cierre", ses: 2 }] },
+
+/* ================= COMPLEMENTOS ================= */
+{ id: "dz", mod: "doc", t: "Ampliación docente: sensores", sub: "Opcional",
+  blocks: [
+  { k: "doc", h: "Fuera de las dos sesiones de 120 minutos", html: `<p>Cubre emparejamiento temporal, correlación, alertas y ranking con <code>sensores.csv</code> (una observación por playa y fecha). El índice es sintético, sin validez sanitaria.</p>
+    <div class="tw"><table class="rs"><thead><tr><th>Control</th><th>Resultado</th></tr></thead><tbody>
+    <tr><td>Observaciones emparejadas (PlayaID, Fecha)</td><td class="num">600</td></tr>
+    <tr><td>Correlación temperatura – contaminación</td><td class="num">0.6006 (descriptiva; no demuestra causalidad)</td></tr>
+    <tr><td>Alertas (media + 3 desviaciones de su playa)</td><td>1: PlayaID 6, 2026-04-10, nivel 100.0</td></tr></tbody></table></div>
+    <p><b>Ranking de índice medio</b></p>${hbars([["Playa Demo 06 · Sur", 30.19], ["Playa Demo 05 · Sur", 26.48], ["Playa Demo 04 · Centro", 23.48], ["Playa Demo 03 · Centro", 20.48], ["Playa Demo 02 · Norte", 17.48]].map(([k, v]) => ({ k: k.split(" · ")[0].replace("Playa Demo ", "Playa "), v, c: COLOR_REG[k.split(" · ")[1]] })), "", 35, v => dec(v, 2))}
+    <div class="legend">${REGIONES.map(r => `<span><i style="background:${COLOR_REG[r]}"></i>${r}</span>`).join("")}</div>
+    <p><small>3 sigmas es una regla exploratoria; no confirma daño ambiental.</small></p>` }
+  ] },
+{ id: "fz", mod: "src", t: "Fuentes", sub: "Fuentes", blocks: [{ k: "fuentes" }] }
+];
+</script>
+<script>
+"use strict";
+/* =======================================================================
+   7a. ESTADO Y PROGRESO (localStorage, si el navegador lo permite)
+   ======================================================================= */
+const KEY = "upn-t07-spark-sim-v1";
+const FRESH = () => ({ scr: "s1a", a: {}, notes: {}, ev: {}, sim: {}, proj: false, doc: false });
+let S = FRESH();
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) { }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
+function A(id) { return S.a[id] || (S.a[id] = { tries: 0, hints: 0, solved: false, first: false, sol: false, exp: false, val: {} }); }
+
+const SCR_IDX = {}; SCREENS.forEach((s, i) => SCR_IDX[s.id] = i);
+const ACT_SCR = {}; SCREENS.forEach(s => s.blocks.forEach(b => { if (b.k === "a") ACT_SCR[b.id] = s.id; }));
+const ACT_IDS = Object.keys(ACT).filter(id => ACT_SCR[id]);
+const modOf = id => SCREENS[SCR_IDX[ACT_SCR[id]]].mod;
+const visibleScreens = () => SCREENS.filter(s => !MODS.find(m => m.id === s.mod).docOnly || S.doc);
+const SES_MODS = { 1: ["s1p", "e1", "e2"], 2: ["s2p", "e3", "e4", "e5"] };
+function stats(ids) { const st = ids.map(A); return { n: ids.length, solved: st.filter(s => s.solved).length, first: st.filter(s => s.first).length, hints: st.reduce((a, s) => a + s.hints, 0), sols: st.filter(s => s.sol).length }; }
+function conceptStatus(c) {
+  const ids = ACT_IDS.filter(id => ACT[id].c === c), st = ids.map(A);
+  if (!st.some(s => s.tries || s.solved || s.hints || s.sol)) return "pen";
+  return st.every(s => s.solved) && !st.some(s => s.sol) && st.reduce((a, s) => a + s.hints, 0) <= ids.length ? "dom" : "rep";
+}
+function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 1800); }
+
+/* =======================================================================
+   2. NAVEGACIÓN
+   ======================================================================= */
+function go(id, focus = true) {
+  const vis = visibleScreens();
+  if (!vis.find(s => s.id === id)) id = vis[0].id;
+  S.scr = id; save(); renderAll();
+  $("#rail").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded", "false");
+  if (focus) { window.scrollTo({ top: 0 }); $("#main").focus({ preventScroll: true }); }
+  try { history.replaceState(null, "", "#" + id); } catch (e) { }
+}
+function renderRail() {
+  const cur = SCREENS[SCR_IDX[S.scr]];
+  let h = "";
+  MODS.forEach(m => {
+    if (m.docOnly && !S.doc) return;
+    if (m.ses) h += `<div class="sess">${m.ses}</div>`;
+    const scr = SCREENS.filter(s => s.mod === m.id), ids = ACT_IDS.filter(id => modOf(id) === m.id), st = stats(ids);
+    const isCur = cur.mod === m.id, full = st.n && st.solved === st.n;
+    h += `<div class="mod ${isCur ? "cur" : ""} ${full ? "full" : ""}"><button class="mod-btn" type="button" data-go="${scr[0].id}"><span class="mod-n" aria-hidden="true">${m.n}</span><span class="mod-t">${m.t}<small>${m.s}</small></span><span class="mod-p">${st.n ? st.solved + "/" + st.n : ""}</span></button>`;
+    if (isCur && scr.length > 1) h += `<ol class="steps">${scr.map(s => {
+      const a = s.blocks.filter(b => b.k === "a").map(b => b.id), done = a.length && a.every(i => A(i).solved), some = a.some(i => A(i).tries || A(i).solved);
+      return `<li><button type="button" data-go="${s.id}" aria-current="${s.id === S.scr}"><span class="dot ${done ? "done" : some ? "half" : ""}" aria-hidden="true"></span><span>${esc(s.t)}</span></button></li>`;
+    }).join("")}</ol>`;
+    h += "</div>";
+  });
+  h += `<div class="rail-foot">El avance se guarda en este navegador.<br><span id="resetZone"><button type="button" class="linkbtn" data-do="resetall">Reiniciar todo</button></span></div>`;
+  $("#rail").innerHTML = h;
+}
+function updateHeader() {
+  const cur = SCREENS[SCR_IDX[S.scr]], mod = MODS.find(m => m.id === cur.mod);
+  const inMod = SCREENS.filter(s => s.mod === cur.mod), pos = inMod.indexOf(cur) + 1;
+  $("#whereT").innerHTML = `<b>${esc(mod.t)}</b> · ${inMod.length > 1 ? `paso ${pos} de ${inMod.length} · ` : ""}${esc(cur.t)}`;
+  const st = stats(ACT_IDS), p = Math.round(100 * st.solved / st.n);
+  $("#barFill").style.width = p + "%"; $("#pctTxt").textContent = p + " %"; $("#barWrap").setAttribute("aria-valuenow", p);
+}
+function pagerHTML() {
+  const vis = visibleScreens(), i = vis.findIndex(s => s.id === S.scr), prev = vis[i - 1], next = vis[i + 1];
+  return `<nav class="pager" aria-label="Anterior y siguiente">${prev ? `<button class="btn" type="button" data-go="${prev.id}">← Anterior: ${esc(prev.t)}</button>` : "<span></span>"}${next ? `<button class="btn pri" type="button" data-go="${next.id}">Siguiente: ${esc(next.t)} →</button>` : "<span></span>"}</nav>`;
+}
+const LAB = { sit: "Situación", con: "Concepto", pred: "Predicción", int: "Interacción", res: "Resultado", expl: "Explicación", colab: "En Colab", doc: "Solo docente" };
+function head(n, kind, title) { return `<header><span class="n" aria-hidden="true">${n}</span><span class="lab">${LAB[kind]}</span>${title ? `<h3>${title}</h3>` : ""}</header>`; }
+function renderMain() {
+  const s = SCREENS[SCR_IDX[S.scr]], mod = MODS.find(m => m.id === s.mod);
+  let h = `<article class="screen"><div class="kicker"><span class="pill dark">${esc(mod.t)}</span><span class="pill time">${esc(mod.s)}</span>${mod.docOnly ? '<span class="pill doc">Modo docente</span>' : ""}</div><h1>${esc(s.t)}</h1><div class="stack">`;
+  let n = 0;
+  s.blocks.forEach(b => {
+    if (b.k === "doc" && !S.doc) return;
+    if (b.k === "a") { n++; h += actHTML(b.id, b.as || "int", n); return; }
+    if (b.k === "sim") { n++; h += `<section class="blk int">${head(n, "int", b.h)}${SIMTAG}<div class="simbox" data-sim="${b.sim}"></div></section>`; return; }
+    if (b.k === "cierre") { h += cierreHTML(b.ses); return; }
+    if (b.k === "fuentes") { h += fuentesHTML(); return; }
+    n++;
+    if (b.k === "expl") h += `<section class="blk expl">${head(n, "expl", "")}<details class="more"><summary>${esc(b.h)}</summary>${b.html}</details></section>`;
+    else h += `<section class="blk ${b.k}">${head(n, b.k, b.h)}${b.html}</section>`;
+  });
+  h += `</div>${pagerHTML()}</article>`;
+  $("#main").innerHTML = h;
+  $$(".simbox").forEach(el => SIMS[el.dataset.sim] && SIMS[el.dataset.sim](el));
+}
+function renderAll() { renderRail(); renderMain(); updateHeader(); }
+
+/* =======================================================================
+   4b. RENDER DE ACTIVIDADES
+   ======================================================================= */
+const HN = ["Pista 1 · orientación", "Pista 2 · estructura", "Pista 3 · parte de la respuesta"];
+const hintHTML = (t, i) => `<div class="hint"><span class="h">${HN[i]}</span>${t}</div>`;
+const solHTML = d => `<div class="sol"><span class="h">Solución docente</span>${d.sol}</div>`;
+const expHTML = d => `<div class="exp"><span class="h">Explicación</span>${d.exp}</div>`;
+function actBody(id) {
+  const d = ACT[id], v = A(id).val;
+  let b = "";
+  if (d.sim && d.type !== "mission") b += SIMTAG + `<div class="simbox" data-sim="${d.sim}" style="margin-bottom:14px"></div>`;
+  switch (d.type) {
+    case "choice": case "multi":
+      b += `<div class="opts" role="group">${d.opts.map((o, i) => { const on = d.type === "choice" ? v.pick === i : (v.picks || []).includes(i); return `<button type="button" class="opt ${d.type === "multi" ? "multi" : ""}" data-act="${id}" data-opt="${i}" aria-pressed="${on}"><span class="mk" aria-hidden="true"></span><span>${esc(o.t)}</span></button>`; }).join("")}</div>`;
+      if (d.type === "multi") b += `<small>Puedes marcar varias opciones.</small>`; break;
+    case "match":
+      b += `<div class="grid-m">${d.items.map((it, i) => `<div class="it">${esc(it.l)}</div><select id="${id}-m${i}" data-act="${id}" data-k="m${i}" aria-label="${esc(it.l)}"><option value="">Elige…</option>${d.choices.map(c => `<option${v["m" + i] === c ? " selected" : ""}>${esc(c)}</option>`).join("")}</select>`).join("")}</div>`; break;
+    case "fill": {
+      const parts = d.code.split(/\[\[(\w+)\]\]/), keys = Object.keys(d.blanks);
+      let code = "";
+      parts.forEach((p, i) => { if (i % 2 === 0) code += hl(p, d.lang); else { const bl = d.blanks[p], w = Math.max(bl.w || 8, (v[p] || "").length + 1); code += `<input class="blank" id="${id}-${p}" data-act="${id}" data-k="${p}" value="${esc(v[p] || "")}" size="${w}" spellcheck="false" autocomplete="off" aria-label="Espacio ${keys.indexOf(p) + 1}">`; } });
+      b += `<div class="cw"><div class="cbar"><span>Completa los espacios · se valida contra respuestas admitidas</span></div><pre class="code">${code}</pre></div>`; break;
+    }
+    case "fields":
+      b += `<div class="fields">${d.fields.map(f => { const val = v[f.k] || ""; if (f.kind === "select") return `<label for="${id}-${f.k}">${esc(f.l)}<select id="${id}-${f.k}" data-act="${id}" data-k="${f.k}"><option value="">Elige…</option>${f.opts.map(o => `<option${val === o ? " selected" : ""}>${esc(o)}</option>`).join("")}</select></label>`;
+        return `<label for="${id}-${f.k}">${esc(f.l)}<input class="f" id="${id}-${f.k}" data-act="${id}" data-k="${f.k}" value="${esc(val)}" ${f.kind === "num" ? 'inputmode="decimal"' : ""} autocomplete="off" spellcheck="false"></label>`; }).join("")}</div>`; break;
+    case "text":
+      b += `<div class="fields wide">${d.parts.map(p => `<label for="${id}-${p.k}">${esc(p.l)}<textarea id="${id}-${p.k}" data-act="${id}" data-k="${p.k}">${esc(v[p.k] || "")}</textarea></label>`).join("")}</div><small>Se revisa que nombres las ideas clave; la redacción es tuya.</small>`; break;
+    case "mission":
+      b += SIMTAG + `<div class="simbox" data-sim="${d.sim}"></div><h4 style="margin:14px 0 6px;font-size:.9rem">Tareas</h4><ul class="checkl" id="${id}-mis">${missionItems(id)}</ul>`; break;
+    case "cards":
+      b += `<div class="reccards">${d.cards.map((c, i) => `<div class="reccard" id="${id}-card${i}"><div class="rec">${esc(c.rec)}</div><select id="${id}-c${i}" data-act="${id}" data-k="c${i}" aria-label="Motivo de: ${esc(c.rec)}"><option value="">Elige el motivo…</option>${d.opts.map(o => `<option${v["c" + i] === o ? " selected" : ""}>${o}</option>`).join("")}</select><details><summary style="cursor:pointer;font-size:.86rem;color:var(--info);font-weight:700">Revelar explicación</summary><p style="margin:6px 0 0;font-size:.9rem">${esc(c.why)}</p></details></div>`).join("")}</div>`; break;
+  }
+  return b;
+}
+function actHTML(id, as, n) {
+  const d = ACT[id], st = A(id);
+  return `<section class="blk ${as} ${st.solved ? "solved" : ""}" id="act-${id}" data-as="${as}">${head(n, as, "")}
+    <p class="q">${esc(d.q)}</p><div id="body-${id}">${actBody(id)}</div>
+    <div class="actions">
+      <button class="btn pri" type="button" data-do="val" data-act="${id}">Comprobar</button>
+      <button class="btn" type="button" data-do="hint" data-act="${id}" ${st.hints >= 3 ? "disabled" : ""}>${st.hints >= 3 ? "Sin más pistas" : "Pista " + (st.hints + 1)}</button>
+      <button class="btn ghost" type="button" data-do="exp" data-act="${id}" ${st.tries || st.solved ? "" : 'disabled title="Disponible después de comprobar"'}>${st.exp ? "Ocultar explicación" : "Mostrar explicación"}</button>
+      ${S.doc ? `<button class="btn docb" type="button" data-do="sol" data-act="${id}">${st.sol ? "Ocultar solución docente" : "Solución docente"}</button>` : ""}
+      <button class="btn ghost" type="button" data-do="reset" data-act="${id}">Reiniciar actividad</button>
+    </div>
+    <div id="fb-${id}" role="status" aria-live="polite">${st.solved ? `<div class="fb ok"><span class="ttl">✓ Resuelto${st.first ? " al primer intento" : ""}.</span></div>` : ""}</div>
+    <div id="hints-${id}">${d.h.slice(0, st.hints).map(hintHTML).join("")}</div>
+    <div id="exp-${id}">${st.exp ? expHTML(d) : ""}</div>
+    <div id="sol-${id}">${st.sol && S.doc ? solHTML(d) : ""}</div></section>`;
+}
+function missionItems(id) { const m = A(id).val.m || {}; return ACT[id].missions.map(([k, t]) => `<li><label><input type="checkbox" disabled ${m[k] ? "checked" : ""}> <span>${m[k] ? "✓ " : ""}${esc(t)}</span></label></li>`).join(""); }
+function rerenderAct(id) { const el = $("#act-" + id); if (!el) return; const n = el.querySelector("header .n").textContent; el.outerHTML = actHTML(id, el.dataset.as, n); $$(`#act-${id} .simbox`).forEach(x => SIMS[x.dataset.sim] && SIMS[x.dataset.sim](x)); }
+
+/* =======================================================================
+   5. VALIDADORES (respuestas controladas; nunca se ejecuta código)
+   ======================================================================= */
+const matchAcc = (n, acc) => acc.some(a => a instanceof RegExp ? a.test(n) : normCode(a) === n);
+const V = {
+  choice(d, st) { if (st.val.pick == null) return { ok: false, msgs: ["Elige una opción."] }; const o = d.opts[st.val.pick]; return { ok: !!o.ok, msgs: [o.fb || ""], mark: { [st.val.pick]: o.ok ? "ok" : "bad" } }; },
+  multi(d, st) {
+    const p = st.val.picks || []; if (!p.length) return { ok: false, msgs: ["Marca al menos una opción."] };
+    const msgs = [], mark = {};
+    p.forEach(i => { mark[i] = d.opts[i].ok ? "ok" : "bad"; if (!d.opts[i].ok) msgs.push(d.opts[i].fb || `«${d.opts[i].t}» no corresponde.`); });
+    const miss = d.opts.filter((o, i) => o.ok && !p.includes(i)).length;
+    if (miss) msgs.push(`Te falta${miss > 1 ? "n" : ""} ${miss} opción${miss > 1 ? "es" : ""} correcta${miss > 1 ? "s" : ""}.`);
+    return { ok: !msgs.length, msgs, mark };
+  },
+  match(d, st) {
+    const msgs = [], mark = {};
+    d.items.forEach((it, i) => { const v = st.val["m" + i]; if (!v) { msgs.push(`Falta relacionar «${it.l}».`); return; } const ok = v === it.a; mark["m" + i] = ok ? "ok" : "bad"; if (!ok) msgs.push(`«${it.l}» no corresponde a «${v}».`); });
+    return { ok: !msgs.length, msgs: msgs.slice(0, 5), mark };
+  },
+  cards(d, st) {
+    const msgs = [], mark = {};
+    d.cards.forEach((c, i) => { const v = st.val["c" + i]; if (!v) { msgs.push(`Falta clasificar: ${c.rec}.`); return; } const ok = v === c.a; mark["c" + i] = ok ? "ok" : "bad"; if (!ok) msgs.push(`${c.rec}: revisa el orden de las reglas.`); });
+    return { ok: !msgs.length, msgs: msgs.slice(0, 5), mark };
+  },
+  fill(d, st) {
+    const msgs = [], mark = {};
+    Object.keys(d.blanks).forEach((k, i) => {
+      const b = d.blanks[k], raw = st.val[k] || "", n = normCode(raw), lab = `Espacio ${i + 1}`;
+      if (!raw.trim()) { msgs.push(`${lab}: está vacío.`); mark[k] = "bad"; return; }
+      if (matchAcc(n, b.acc)) { mark[k] = "ok"; return; }
+      mark[k] = "bad"; const w = (b.wrong || []).find(([re]) => re.test(n));
+      msgs.push(`${lab}: ${w ? w[1] : "no coincide con lo que pide el comentario. Pide una pista si lo necesitas."}`);
+    });
+    return { ok: !msgs.length, msgs, mark };
+  },
+  fields(d, st) {
+    const msgs = [], mark = {};
+    d.fields.forEach(f => {
+      const raw = String(st.val[f.k] || ""); if (!raw.trim()) { msgs.push(`«${f.l}»: falta completar.`); mark[f.k] = "bad"; return; }
+      let ok;
+      if (f.kind === "num") { const x = parseNum(raw); ok = !isNaN(x) && Math.abs(x - f.v) <= (f.tol ?? 0.005); if (!ok) msgs.push(`«${f.l}»: ${isNaN(x) ? "escribe solo un número." : "no coincide con el control esperado; revisa el cálculo."}`); }
+      else if (f.kind === "select") { ok = f.ans.includes(raw); if (!ok) msgs.push(`«${f.l}»: no es la opción correcta.`); }
+      else { const n = f.code ? normCode(raw) : normTxt(raw); ok = f.acc.some(a => (f.code ? normCode(a) : normTxt(a)) === n); if (!ok) msgs.push(`«${f.l}»: no coincide con la salida esperada.`); }
+      mark[f.k] = ok ? "ok" : "bad";
+    });
+    return { ok: !msgs.length, msgs, mark };
+  },
+  text(d, st) {
+    const msgs = [], mark = {};
+    d.parts.forEach(p => { const n = normTxt(st.val[p.k] || ""); if (n.length < 12) { msgs.push(`«${p.l}»: escribe una respuesta más completa.`); mark[p.k] = "bad"; return; } const miss = p.rub.filter(r => !r.any.some(k => n.includes(k))); mark[p.k] = miss.length ? "bad" : "ok"; miss.forEach(r => msgs.push(`«${p.l}»: ${r.miss}`)); });
+    return { ok: !msgs.length, msgs, mark };
+  },
+  mission(d, st) { const m = st.val.m || {}, pend = d.missions.filter(([k]) => !m[k]); return { ok: !pend.length, msgs: pend.map(([, t]) => "Pendiente: " + t) }; }
+};
+function applyMarks(id, res) {
+  const d = ACT[id], root = $("#act-" + id); if (!root) return;
+  $$(".opt,select,input.f,input.blank,textarea,.reccard", root).forEach(el => el.classList.remove("ok", "bad"));
+  const m = res.mark || {};
+  if (d.type === "choice" || d.type === "multi") $$(".opt", root).forEach((el, i) => m[i] && el.classList.add(m[i]));
+  else Object.entries(m).forEach(([k, c]) => { const el = $(`[data-k="${k}"]`, root); if (el) el.classList.add(c); if (d.type === "cards") $(`#${id}-card${k.slice(1)}`)?.classList.add(c); });
+}
+function validate(id) {
+  const d = ACT[id], st = A(id), res = V[d.type](d, st);
+  if (!st.solved) { st.tries++; if (res.ok) { st.solved = true; st.first = st.tries === 1; } }
+  if (d.auto && !st.exp) st.exp = true;
+  save(); applyMarks(id, res);
+  const fb = $("#fb-" + id);
+  fb.innerHTML = res.ok
+    ? `<div class="fb ok"><span class="ttl">✓ Correcto${st.first ? " al primer intento" : ""}.</span> ${d.type === "choice" ? res.msgs[0] : ""}</div>`
+    : `<div class="fb bad"><span class="ttl">✕ Revisa (intento ${st.tries}):</span><ul>${res.msgs.filter(Boolean).map(m => `<li>${m}</li>`).join("")}</ul></div>`;
+  const root = $("#act-" + id); root.classList.toggle("solved", st.solved);
+  const eb = $(`[data-do="exp"][data-act="${id}"]`, root); eb.disabled = false; eb.removeAttribute("title");
+  if (st.exp) { $("#exp-" + id).innerHTML = expHTML(d); eb.textContent = "Ocultar explicación"; }
+  if (id === "e1_pred") { const sb = $('.simbox[data-sim="viajes"]'); if (sb) SIMS.viajes(sb); }
+  renderRail(); updateHeader();
+}
+
+/* =======================================================================
+   6. PISTAS, EXPLICACIÓN, SOLUCIÓN DOCENTE Y REINICIO
+   ======================================================================= */
+function giveHint(id, btn) { const d = ACT[id], st = A(id); if (st.hints >= 3) return; $("#hints-" + id).insertAdjacentHTML("beforeend", hintHTML(d.h[st.hints], st.hints)); st.hints++; save(); btn.textContent = st.hints >= 3 ? "Sin más pistas" : "Pista " + (st.hints + 1); btn.disabled = st.hints >= 3; }
+function toggleExp(id, btn) { const st = A(id); st.exp = !st.exp; save(); $("#exp-" + id).innerHTML = st.exp ? expHTML(ACT[id]) : ""; btn.textContent = st.exp ? "Ocultar explicación" : "Mostrar explicación"; }
+function toggleSol(id, btn) { const st = A(id), open = !$("#sol-" + id).innerHTML; if (open) st.sol = true; save(); $("#sol-" + id).innerHTML = open ? solHTML(ACT[id]) : ""; btn.textContent = open ? "Ocultar solución docente" : "Solución docente"; renderRail(); }
+function resetAct(id) {
+  delete S.a[id];
+  if (id === "e2_plan") delete S.sim.rdd;
+  if (id === "e5_reto") delete S.sim.reto;
+  save(); rerenderAct(id);
+  if (id === "e1_pred") { const sb = $('.simbox[data-sim="viajes"]'); if (sb) { S.sim.v = { tab: "datos" }; SIMS.viajes(sb); } }
+  renderRail(); updateHeader(); toast("Actividad reiniciada");
+}
+
+/* =======================================================================
+   3b. SIMULACIONES INTERACTIVAS
+   ======================================================================= */
+const SIMS = {};
+const rerender = name => { const el = $(`.simbox[data-sim="${name}"]`); if (el) SIMS[name](el); };
+
+/* ---- Mapa del entorno ---- */
+const PIECES = {
+  colab: ["Google Colab", "Entorno en el navegador donde se ejecuta el cuaderno .ipynb. Presta una máquina temporal en la nube: lo que instales o subas se pierde al cerrar la sesión.", "Archivo → Subir cuaderno; entorno CPU."],
+  python: ["Python", "Lenguaje con el que escribimos las instrucciones de cada celda.", "Cada celda de código del cuaderno."],
+  pyspark: ["PySpark", "API de Python para Apache Spark: traduce nuestras instrucciones a trabajo de Spark.", "%pip install -q pyspark==4.0.3"],
+  spark: ["Apache Spark", "Motor que divide el trabajo en tareas y procesa los datos por particiones. Corre sobre Java (por eso el cuaderno verifica Java 17).", "SparkSession.builder … getOrCreate()"],
+  driver: ["Driver", "Proceso que coordina la aplicación: arma el plan, reparte tareas y recibe lo que pide collect(). Si collect trae millones de filas, puede quedarse sin memoria.", "spark.sparkContext"],
+  hilo: ["Hilos (local[2])", "Dos hilos de ejecución en la misma máquina de Colab. Procesan particiones en paralelo, pero no son dos servidores.", ".master('local[2]')"],
+  csv: ["CSV", "Archivo de texto de entrada. No guarda tipos: por eso declaramos un esquema al leerlo.", "spark.read.option('header', True).schema(…).csv(…)"],
+  df: ["DataFrame", "Datos organizados en columnas con nombre y tipo. Permite filtros, uniones y agregaciones.", "viajes.printSchema()"],
+  rdd: ["RDD", "Colección distribuida e inmutable dividida en particiones. Es la estructura base de Spark.", "spark.sparkContext.parallelize(datos, 2)"],
+  sql: ["Spark SQL", "Consultas SQL sobre DataFrames registrados como vistas temporales.", "viajes.createOrReplaceTempView('viajes')"]
+};
+SIMS.env = el => {
+  const sel = S.sim.env || "spark", p = k => `<button type="button" class="piece" data-env="${k}" aria-pressed="${sel === k}">${PIECES[k][0]}</button>`;
+  el.innerHTML = `<div class="envmap"><div class="envbox"><div class="t">Máquina temporal en la nube ${p("colab").replace('class="piece"', 'class="piece" style="margin-left:8px;padding:2px 10px"')}</div>
+    <div class="envrow">${p("python")}<span class="arrow-r" aria-hidden="true">→</span>${p("pyspark")}<span class="arrow-r" aria-hidden="true">→</span>
+      <div class="envbox" style="flex:1;min-width:240px"><div class="t">Motor ${p("spark").replace('class="piece"', 'class="piece" style="margin-left:8px;padding:2px 10px"')}</div><div class="envrow">${p("driver")}${p("hilo")}</div></div></div>
+    <div class="envrow" style="margin-top:10px">${p("csv")}<span class="arrow-r" aria-hidden="true">→ leer →</span>${p("df")}${p("rdd")}<span class="arrow-r" aria-hidden="true">consultar con</span>${p("sql")}</div></div>
+    <div class="panel" aria-live="polite"><b>${PIECES[sel][0]}</b><p style="margin:4px 0">${PIECES[sel][1]}</p><small>En el cuaderno: <code>${esc(PIECES[sel][2])}</code></small></div></div>`;
+};
+
+/* ---- E01 · Viajes ---- */
+const COLS = {
+  CodigoViaje: ["STRING", "Texto. Identifica cada viaje didáctico (CEN-001 … CEN-006)."],
+  Fecha: ["DATE", "Fecha sin hora. Permite agrupar por mes o año sin convertir texto."],
+  Servicio: ["STRING", "Texto: EJECUTIVO, ESTANDAR o ENCOMIENDA."],
+  Distrito: ["STRING", "Texto. Es la columna por la que agrupamos."],
+  Importe: ["DECIMAL(12,2)", "Número exacto con dos decimales: 12 dígitos en total. Evita errores de redondeo en montos."]
+};
+SIMS.viajes = el => {
+  const v = S.sim.v || (S.sim.v = { tab: "datos" }), unlocked = A("e1_pred").tries > 0 || A("e1_pred").solved;
+  if (v.tab === "agr" && !unlocked) v.tab = "datos";
+  const tab = (k, t, dis) => `<button type="button" class="tab" data-vt="${k}" aria-pressed="${v.tab === k}" ${dis ? "disabled" : ""}>${t}</button>`;
+  let body = "";
+  if (v.tab === "datos") body = `<div class="tw"><table class="rs"><thead><tr>${Object.keys(COLS).map(c => `<th${c === "Importe" ? ' class="n"' : ""}>${c}</th>`).join("")}</tr></thead><tbody>${VIAJES.map(r => `<tr><td>${r.c}</td><td>${r.f}</td><td>${r.s}</td><td>${r.d}</td><td class="n">${dec(r.i)}</td></tr>`).join("")}</tbody></table></div><div class="out">viajes.count() → <b>6</b></div>`;
+  else if (v.tab === "esq") {
+    const c = v.col || "Importe";
+    body = `<div class="out">root\n${Object.keys(COLS).map(k => ` |-- <button type="button" class="colbtn" style="color:${k === c ? "var(--upn)" : "#9CDCFE"}" data-col="${k}">${k}</button>: ${COLS[k][0].toLowerCase()} (nullable = true)`).join("\n")}</div>
+      <div class="panel" style="margin-top:10px" aria-live="polite"><b>${c} · ${COLS[c][0]}</b><p style="margin:4px 0">${COLS[c][1]}</p><small><b>nullable = true</b> significa que la columna admite nulos; no afirma que existan valores faltantes.</small></div><small>Pulsa el nombre de cada columna.</small>`;
+  } else {
+    const step = v.step ?? 0;
+    const cards = VIAJES.map((r, i) => i < step ? "" : `<div class="tcard"><b>${r.c}</b>${r.d} · ${dec(r.i)}</div>`).join("");
+    const bucket = d => { const its = VIAJES.slice(0, step).filter(r => r.d === d); return `<div class="bucket"><h4>${d}</h4>${its.map(r => `<div class="tcard on" style="margin:4px 0"><b>${r.c}</b>${dec(r.i)}</div>`).join("")}<div class="agg">COUNT(*) = ${its.length}<br>SUM(Importe) = ${dec(its.reduce((a, r) => a + r.i, 0))}</div></div>`; };
+    const done = step >= 6;
+    body = `<div class="toolbar"><button type="button" class="btn pri" data-vg="play" ${done ? "disabled" : ""}>${step ? "Siguiente viaje" : "Agrupar por Distrito"}</button><button type="button" class="btn" data-vg="all" ${done ? "disabled" : ""}>Agrupar todo</button><button type="button" class="btn ghost" data-vg="reset">Volver a empezar</button></div>
+      <div class="cards">${cards || "<small>Todos los viajes están agrupados.</small>"}</div><div class="buckets">${DISTRITOS.map(bucket).join("")}</div>
+      ${done ? `<div class="tw" style="margin-top:12px"><table class="rs"><thead><tr><th>Distrito</th><th class="n">Viajes</th><th class="n">ImporteTotal</th></tr></thead><tbody>${DISTRITOS.map(d => { const it = VIAJES.filter(r => r.d === d); return `<tr><td>${d}</td><td class="n">${it.length}</td><td class="n">${dec(it.reduce((a, r) => a + r.i, 0))}</td></tr>`; }).join("")}<tr class="tot"><td>Total</td><td class="n">6</td><td class="n">120.00</td></tr></tbody></table></div>` : ""}`;
+  }
+  el.innerHTML = `<div class="toolbar" role="group" aria-label="Vista">${tab("datos", "Datos originales")}${tab("esq", "Esquema de columnas")}${tab("agr", "Agrupado por distrito", !unlocked)}${unlocked ? "" : "<small>Haz primero tu predicción para habilitar la agrupación.</small>"}</div>${body}`;
+};
+
+/* ---- E02 · Tuplas ---- */
+SIMS.tuplas = el => {
+  const sel = S.sim.tsel ?? 0, [d, i] = PARES[sel];
+  const part = k => `<div class="part ${k ? "p1" : ""}"><h4><span>Partición ${k}</span><small>la procesa un hilo</small></h4>${PART[k].map(x => `<button type="button" class="tup ${x === sel ? "on" : ""}" data-tup="${x}" aria-pressed="${x === sel}"><span>'${PARES[x][0]}'</span><span>${PARES[x][1]}</span></button>`).join("")}</div>`;
+  el.innerHTML = `<div class="envbox"><div class="t">Máquina de Colab · local[2]</div><div class="parts">${part(0)}${part(1)}</div></div>
+   <div class="panel" style="margin-top:10px" aria-live="polite"><div class="out">fila = ('${d}', ${i})
+fila[0] → '<b>${d}</b>'        # posición 0: distrito
+fila[1] → <b>${i}</b>             # posición 1: importe
+(lambda fila: fila[0] == 'Comas')(fila) → <b>${d === "Comas"}</b>
+(lambda fila: fila[1])(fila)            → <b>${i}</b></div>
+   <p style="margin:8px 0 0"><small>Una <b>lambda</b> es una función corta sin nombre. <code>lambda x: x * 2</code> recibe x y devuelve el doble: con 15 devuelve 30.</small></p></div>
+   <div class="out" style="margin-top:10px">rdd.getNumPartitions() → <b>2</b>\nrdd.glom().collect() → [[('Comas', 15), ('Comas', 20), ('Los Olivos', 10)], [('Los Olivos', 20), ('Comas', 30), ('Independencia', 25)]]</div>`;
+};
+
+/* ---- E02 · Plan perezoso ---- */
+function rddState() { return S.sim.rdd || (S.sim.rdd = { plan: [], ran: {}, last: "" }); }
+function rddMission(k) {
+  const st = A("e2_plan"); st.val.m = st.val.m || {};
+  if (!st.val.m[k]) { st.val.m[k] = true; save(); const ul = $("#e2_plan-mis"); if (ul) ul.innerHTML = missionItems("e2_plan"); if (ACT.e2_plan.missions.every(([q]) => st.val.m[q]) && !st.solved) validate("e2_plan"); }
+}
+SIMS.rdd = el => {
+  const r = rddState(), has = k => r.plan.includes(k), show = r.last;
+  const tupCls = x => { if (show === "count" || show === "sum") return PARES[x][0] === "Comas" ? "pass" : "drop"; return ""; };
+  const part = k => `<div class="part ${k ? "p1" : ""}"><h4><span>Partición ${k}</span><small>RDD original · no cambia</small></h4>${PART[k].map(x => `<span class="tup ${tupCls(x)}" style="cursor:default"><span>'${PARES[x][0]}'</span><span>${PARES[x][1]}</span></span>`).join("")}</div>`;
+  const node = (k, t) => has(k) ? `<span class="node ${r.ran[k] ? "run" : ""}">${t}${r.ran[k] ? " ✓ ejecutado" : " · pendiente"}</span>` : "";
+  let out = "";
+  if (show === "count") out = `comas.count() → <b>3</b>\nSe evaluó filter en las dos particiones: pasan ('Comas',15), ('Comas',20) y ('Comas',30).`;
+  else if (show === "sum") out = `importes_comas.sum() → <b>65</b>\nfilter conserva Comas → map extrae importes [15, 20, 30] → sum = 15 + 20 + 30 = 65`;
+  else if (show === "collect") out = `sorted(por_distrito.collect()) → <b>[('Comas', 65), ('Independencia', 25), ('Los Olivos', 30)]</b>\ncollect trae el resultado al driver (aquí solo 3 elementos).`;
+  else out = r.plan.length ? "Hay transformaciones en el plan, pero ninguna acción: Spark todavía no procesó ninguna tupla." : "Agrega transformaciones al plan.";
+  const shuffle = show === "collect" ? `<div class="shuffle"><div class="lanes"><div class="lane"><b>Partición 0</b> · suma local<br>Comas 15+20 = 35<br>Los Olivos 10</div><div class="lane"><b>Partición 1</b> · suma local<br>Los Olivos 20<br>Comas 30<br>Independencia 25</div></div>
+    <div style="text-align:center;font-weight:700">→<br><small>redistribución<br>por clave</small></div>
+    <div class="lanes"><div class="lane">Comas: 35 + 30 = <b>65</b></div><div class="lane">Independencia: <b>25</b></div><div class="lane">Los Olivos: 10 + 20 = <b>30</b></div></div></div><small>Reparto conceptual por clave; Spark decide internamente a qué partición va cada clave.</small>` : "";
+  el.innerHTML = `<div class="envbox"><div class="t">RDD original: rdd = parallelize(datos, 2)</div><div class="parts">${part(0)}${part(1)}</div></div>
+   <h4 style="margin:14px 0 6px;font-size:.9rem">Transformaciones (se agregan al plan)</h4>
+   <div class="toolbar"><button type="button" class="btn" data-rd="f" ${has("f") ? "disabled" : ""}>+ filter(fila[0] == 'Comas')</button><button type="button" class="btn" data-rd="m" ${has("m") || !has("f") ? "disabled" : ""}>+ map(fila[1])</button><button type="button" class="btn" data-rd="r" ${has("r") ? "disabled" : ""}>+ reduceByKey(a + b)</button></div>
+   <div class="plan" aria-live="polite"><span class="node" style="border-style:solid">rdd</span>${has("f") ? "→" : ""}${node("f", "comas = filter")}${has("m") ? "→" : ""}${node("m", "importes_comas = map")}${has("r") ? '<span style="margin-left:14px">rdd →</span>' : ""}${node("r", "por_distrito = reduceByKey")}${r.plan.length ? "" : '<small>Plan vacío</small>'}</div>
+   <h4 style="margin:14px 0 6px;font-size:.9rem">Acciones (piden un resultado)</h4>
+   <div class="toolbar"><button type="button" class="btn pri" data-rd="count" ${has("f") ? "" : "disabled"}>comas.count()</button><button type="button" class="btn pri" data-rd="sum" ${has("m") ? "" : "disabled"}>importes_comas.sum()</button><button type="button" class="btn pri" data-rd="collect" ${has("r") ? "" : "disabled"}>por_distrito.collect()</button><button type="button" class="btn ghost" data-rd="reset">Vaciar plan</button></div>
+   <div class="out" aria-live="polite">${out}</div>${shuffle}`;
+};
+function rddAction(k) {
+  const r = rddState();
+  if (k === "reset") { S.sim.rdd = { plan: [], ran: {}, last: "" }; }
+  else if (["f", "m", "r"].includes(k)) { if (!r.plan.includes(k)) r.plan.push(k); r.last = ""; rddMission(k); }
+  else { r.last = k; if (k === "count") r.ran.f = true; if (k === "sum") { r.ran.f = true; r.ran.m = true; } if (k === "collect") r.ran.r = true; rddMission(k); }
+  save(); rerender("rdd");
+}
+
+/* ---- E04 · Toneladas ---- */
+SIMS.ton = el => {
+  const m = S.sim.tonm || "sum";
+  const rows = REGIONES.map(r => ({ k: r, v: m === "sum" ? REG[r].kg / 1000 : REG[r].pes, c: COLOR_REG[r] })).sort((a, b) => b.v - a.v);
+  el.innerHTML = `<div class="toolbar"><button type="button" class="tab" data-tm="count" aria-pressed="${m === "count"}">COUNT(*) · pesajes</button><button type="button" class="tab" data-tm="sum" aria-pressed="${m === "sum"}">SUM(PesoKg) / 1000 · toneladas</button></div>
+   ${m === "sum" ? hbars(rows, "t", 20) : hbars(rows, "pesajes", 700, v => v)}
+   <div class="tw"><table class="rs"><thead><tr><th>Region</th><th class="n">Registros</th><th class="n">Kilos</th><th class="n">Toneladas</th></tr></thead><tbody>${["Centro", "Norte", "Sur"].map(r => `<tr><td>${r}</td><td class="n">${REG[r].pes}</td><td class="n">${dec(REG[r].kg)}</td><td class="n">${dec(REG[r].kg / 1000, 3)}</td></tr>`).join("")}<tr class="tot"><td>Total</td><td class="n">1800</td><td class="n">35994.00</td><td class="n">35.994</td></tr></tbody></table></div>
+   <small>${m === "count" ? "Las tres regiones tienen 600 pesajes: COUNT no las distingue." : "Las toneladas sí distinguen las regiones y se pueden sumar: 35.994 t."}</small>`;
+};
+
+/* ---- E04 · Voluntarios ---- */
+SIMS.vol = el => {
+  const m = S.sim.volm || "pesaje";
+  const rows = J1.pes.map(([t, kg]) => `<tr><td>${t}</td><td class="n">${dec(kg)}</td><td class="n">${J1.vol}</td></tr>`).join("");
+  el.innerHTML = `<p style="margin:0 0 8px"><b>Jornada ${J1.id}</b> · ${J1.playa} · ${J1.region} · ${J1.fecha} · NumVoluntarios = ${J1.vol}</p>
+   <div class="tw"><table class="rs"><thead><tr><th>TipoResiduo</th><th class="n">PesoKg</th><th class="n">NumVoluntarios (repetido en el detalle)</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <div class="toolbar" style="margin-top:10px"><button type="button" class="tab" data-vm="pesaje" aria-pressed="${m === "pesaje"}">Sumar NumVoluntarios por pesaje</button><button type="button" class="tab" data-vm="jornada" aria-pressed="${m === "jornada"}">Agrupar por jornada primero</button></div>
+   <div class="out">${m === "pesaje" ? `SUM(NumVoluntarios) en la jornada 1 = 11 + 11 + 11 = <b>33</b>   ✕ triplica\nNorte: 8100 · Centro: 9300 · Sur: 10500` : `groupBy('JornadaID', 'Region', 'NumVoluntarios') → un valor por jornada = <b>11</b>   ✓\nNorte: 2700 · Centro: 3100 · Sur: 3500 participaciones\nTasa jornada 1 = 11 × 1000 / 10 kg de plástico = <b>1100</b> voluntarios por tonelada`}</div>`;
+};
+
+/* ---- E04 · Estadística ---- */
+SIMS.stats = el => {
+  const sumTry = S.sim.sumTry;
+  el.innerHTML = `<p style="margin:0 0 6px"><b>Media ± desviación estándar muestral</b> de VoluntariosPorTon, 200 jornadas por región</p>${meanSdSVG()}
+   <div class="legend">${REGIONES.map(r => `<span><i style="background:${COLOR_REG[r]}"></i>${r}</span>`).join("")}</div>
+   <div class="tw" style="margin-top:8px"><table class="rs"><thead><tr><th>Region</th><th class="n">Jornadas</th><th class="n">MediaVolPorTon</th><th class="n">DesvMuestral</th><th class="n">Razón entre totales*</th><th class="n">Alto impacto</th><th class="n">Bajo impacto</th></tr></thead><tbody>
+   ${REGIONES.map(r => `<tr><td>${r}</td><td class="n">${REG[r].jor}</td><td class="n">${dec(REG[r].media)}</td><td class="n">${dec(REG[r].sd)}</td><td class="n">${dec(REG[r].ratio)}</td><td class="n">${REG[r].alto}</td><td class="n">${REG[r].bajo}</td></tr>`).join("")}
+   <tr class="tot"><td>Total</td><td class="n">600</td><td class="n">no aditiva</td><td class="n">no aditiva</td><td class="n">—</td><td class="n">303</td><td class="n">297</td></tr></tbody></table></div>
+   <small>* Razón = participaciones × 1000 / kg de plástico de toda la región, calculada con datos_tema07.zip para comparar. No es la columna MediaVolPorTon de la guía. Umbral de impacto: 60 kg por jornada (didáctico).</small>
+   <div class="toolbar" style="margin-top:10px"><button type="button" class="btn" data-st="sum">Intentar sumar las tres medias</button></div>
+   ${sumTry ? `<div class="fb bad">749.90 + 398.08 + 295.63 = 1443.61 → <b>sin significado</b>. Una media no es una cantidad aditiva: no representa a ninguna jornada ni a la suma de regiones.</div>` : ""}`;
+};
+
+/* ---- E05 · Parquet y CSV ---- */
+SIMS.parquet = el => {
+  const open = !!S.sim.pqOpen;
+  el.innerHTML = `<div class="two"><div class="panel"><b>salidas_tema07/detalle_parquet/</b> <small>carpeta</small>
+    <div class="toolbar" style="margin-top:6px"><button type="button" class="btn" data-pq="1" aria-expanded="${open}">${open ? "Cerrar carpeta" : "Abrir carpeta"}</button></div>
+    ${open ? `<div class="out">_SUCCESS
+part-00000-…-c000.snappy.parquet
+part-00001-…-c000.snappy.parquet
+…</div><small>Nombres ilustrativos: la cantidad de archivos part-* depende de las particiones. Spark relee la carpeta completa: 1800 filas con sus tipos.</small>` : `<p style="margin:6px 0 0"><small>Formato columnar con esquema. Se relee con spark.read.parquet(…).</small></p>`}</div>
+   <div class="panel"><b>salidas_tema07/resumen_region.csv</b> <small>archivo de texto · 3 filas</small><div class="out">Region,Registros,Kilos,Toneladas,Jornadas,MediaVolPorTon,DesvMuestral
+Centro,600,11998.00,11.998,200,398.08,51.38
+Norte,600,5998.00,5.998,200,749.9,213.39
+Sur,600,17998.00,17.998,200,295.63,26.86</div><small>Es la entrada de Power BI. No guarda tipos: revísalos al importar.</small></div></div>`;
+};
+
+/* ---- E05 · Reporte Power BI (maqueta) ---- */
+SIMS.report = el => {
+  const r = S.sim.rep || (S.sim.rep = { regs: REGIONES.slice(), ds: "res" });
+  if (r.ds === "reto" && !S.doc) r.ds = "res";
+  const reto = r.ds === "reto", vis = REGIONES.filter(x => r.regs.includes(x));
+  const val = x => reto ? REG[x].plas / 1000 : REG[x].kg / 1000;
+  const rows = vis.map(x => ({ k: x, v: val(x), c: COLOR_REG[x] })).sort((a, b) => b.v - a.v);
+  const total = rows.reduce((a, x) => a + x.v, 0);
+  const table = reto
+    ? `<thead><tr><th>Region</th><th class="n">Pesajes</th><th class="n">PromedioKgPorPesaje</th></tr></thead><tbody>${vis.map(x => `<tr><td>${x}</td><td class="n">200</td><td class="n">${dec(REG[x].plas / 200)}</td></tr>`).join("")}</tbody>`
+    : `<thead><tr><th>Region</th><th class="n">MediaVolPorTon</th><th class="n">DesvMuestral</th></tr></thead><tbody>${vis.map(x => `<tr><td>${x}</td><td class="n">${dec(REG[x].media)}</td><td class="n">${dec(REG[x].sd)}</td></tr>`).join("")}</tbody>`;
+  el.innerHTML = `<div class="toolbar"><b style="font-size:.86rem">Filtro Region:</b>${REGIONES.map(x => `<button type="button" class="chip" data-rr="${x}" aria-pressed="${r.regs.includes(x)}">${r.regs.includes(x) ? "✓ " : ""}${x}</button>`).join("")}
+     ${S.doc ? `<span style="margin-left:auto"></span><button type="button" class="chip" data-rds="res" aria-pressed="${!reto}">resumen_region.csv</button><button type="button" class="chip" data-rds="reto" aria-pressed="${reto}">reto_plastico.csv (docente)</button>` : ""}</div>
+   <div class="report"><div class="tile"><h5>${reto ? "¿En qué región se recolectó más plástico? (toneladas)" : "¿En qué región se recolectó más peso de residuos? (toneladas)"}</h5>${rows.length ? hbars(rows, "t", 20) : "<small>Sin regiones seleccionadas.</small>"}</div>
+   <div class="tile"><h5>${reto ? "Toneladas de plástico" : "Toneladas recolectadas"}</h5><div class="kpi">${dec(total, 3)}</div><div class="kpi-sub">Suma de ${reto ? "ToneladasPlastico" : "Toneladas"} · ${vis.length} región(es)</div></div>
+   <div class="tile wide"><h5>${reto ? "Pesajes y promedio por pesaje" : "Voluntarios por tonelada de plástico (sin resumir)"}</h5><div class="tw"><table class="rs">${table}</table></div></div></div>
+   <small>Maqueta: reproduce lo que Power BI mostraría con el CSV; no ejecuta Power BI.</small>`;
+};
+
+/* ---- E05 · Reto: cronómetro y lista ---- */
+let retoTimer = null;
+SIMS.reto = el => {
+  const t = S.sim.reto || (S.sim.reto = { left: 900, run: false, chk: {} });
+  const mm = String(Math.floor(t.left / 60)).padStart(2, "0"), ss = String(t.left % 60).padStart(2, "0");
+  const steps = ["Leí el Parquet en base_reto (1800 filas)", "Registré reto_residuos y filtré PLASTICO antes de agrupar", "Calculé Pesajes, ToneladasPlastico y PromedioKgPorPesaje", "Comprobé 3 regiones y 600 pesajes; descargué reto_plastico.csv", "Escribí la interpretación de dos líneas"];
+  el.innerHTML = `<div class="two"><div class="panel"><b>Tiempo del reto</b><div class="timer num" aria-live="off">${mm}:${ss}</div>
+    <div class="toolbar" style="margin:6px 0 0"><button type="button" class="btn pri" data-rt="toggle">${t.run ? "Pausar" : t.left < 900 ? "Continuar" : "Iniciar 15 min"}</button><button type="button" class="btn ghost" data-rt="reset">Reiniciar tiempo</button></div>${t.left === 0 ? '<p class="fb bad" style="margin-top:8px">Tiempo terminado.</p>' : ""}</div>
+    <div class="panel"><b>Lista del reto</b><ul class="checkl" style="margin-top:6px">${steps.map((s, i) => `<li><label><input type="checkbox" id="rchk${i}" data-rc="${i}" ${t.chk[i] ? "checked" : ""}> <span>${s}</span></label></li>`).join("")}</ul></div></div>`;
+};
+function retoTick() {
+  const t = S.sim.reto; if (!t || !t.run) { clearInterval(retoTimer); retoTimer = null; return; }
+  t.left = Math.max(0, t.left - 1); if (!t.left) t.run = false; save();
+  const el = $('.simbox[data-sim="reto"]'); if (el) { const tm = el.querySelector(".timer"); if (tm && t.left) tm.textContent = `${String(Math.floor(t.left / 60)).padStart(2, "0")}:${String(t.left % 60).padStart(2, "0")}`; else SIMS.reto(el); }
+}
+
+/* =======================================================================
+   7b. CIERRES, LOGROS Y FUENTES
+   ======================================================================= */
+const EVID = {
+  1: ["Cuaderno de la sesión 1 resuelto (.ipynb)", "Captura de la agregación con 6 viajes y 120.00 y del esquema de columnas", "Captura del TODO 1 con 2 particiones y Comas 3 / 65", "Respuesta de interpretación dentro del cuaderno"],
+  2: ["Cuaderno con TODO 2 y TODO 3 resueltos y el razonamiento del TODO 4", "Captura del control de calidad y de la consulta por región", "Captura de explain y anotación de una operación del plan", "resumen_region.csv, resultados_tema07.zip y OceanCleanUp_Tema07.pbix", "Captura de la página de reporte con título, unidades y total sin filtros", "Reto integrador: código, salida, reto_plastico.csv y respuesta de dos líneas"]
+};
+const PROPIAS = {
+  1: ["Explica con tus palabras qué es una partición y por qué local[2] no significa dos servidores.", "Explica la diferencia entre una transformación y una acción usando un ejemplo del ejercicio."],
+  2: ["Explica con tus palabras por qué la tasa de aceptación usa 1804 como denominador.", "Explica por qué no se suman NumVoluntarios por pesaje ni las medias regionales.", "Explica qué decisión apoya el reporte y qué no permite concluir."]
+};
+function cierreHTML(ses) {
+  const ids = ACT_IDS.filter(id => SES_MODS[ses].includes(modOf(id))), st = stats(ids);
+  const cs = [...new Set(ids.map(id => ACT[id].c))], L = { dom: "Dominado", rep: "Repasar", pen: "Pendiente" };
+  return `<section class="blk res"><header><span class="lab">Logros de la sesión ${ses}</span></header>
+    <div class="medal"><div><b>${st.solved}/${st.n}</b><span>actividades resueltas</span></div><div><b>${st.first}</b><span>al primer intento</span></div><div><b>${st.hints}</b><span>pistas usadas</span></div><div><b>${st.sols}</b><span>soluciones docentes abiertas</span></div></div>
+    <ul class="checkl" style="margin-top:12px">${cs.map(c => { const s = conceptStatus(c); return `<li><span class="pill ${s === "dom" ? "dark" : s === "rep" ? "time" : ""}" style="${s === "pen" ? "border:1px solid var(--line-strong)" : ""}">${L[s]}</span> ${esc(CONCEPTOS[c])}</li>`; }).join("")}</ul>
+    <p style="margin-top:8px"><small>Dominado: resuelto sin abrir la solución docente y con una pista o menos por actividad, en promedio.</small></p></section>
+   <section class="blk colab"><header><span class="lab">Evidencias de la sesión ${ses}</span></header><ul class="checkl">${EVID[ses].map((e, i) => `<li><label><input type="checkbox" id="ev${ses}-${i}" data-ev="${ses}-${i}" ${S.ev[ses + "-" + i] ? "checked" : ""}> <span>${esc(e)}</span></label></li>`).join("")}</ul>
+    <p style="margin-top:8px"><small>Descarga el cuaderno y los archivos antes de cerrar Colab: la máquina es temporal.</small></p></section>
+   <section class="blk pred"><header><span class="lab">Con tus propias palabras</span></header><div class="fields wide">${PROPIAS[ses].map((q, i) => `<label for="np${ses}-${i}">${esc(q)}<textarea id="np${ses}-${i}" data-note="${ses}-${i}">${esc(S.notes[ses + "-" + i] || "")}</textarea></label>`).join("")}</div><small>Borrador que se guarda en este navegador; pásalo a tu cuaderno.</small></section>`;
+}
+function fuentesHTML() {
+  const L = [
+    ["Guía de actividades del estudiante · Laboratorio 06 y 07 (Colab)", ""], ["Guía docente resuelta · Laboratorio 06 y 07", ""],
+    ["Cuadernos Lab07_Sesion1 y Lab07_Sesion2 (estudiante y docente) y datos_tema07.zip", ""],
+    ["Apache Spark 4.0.3 · Instalación de PySpark", "https://spark.apache.org/docs/4.0.3/api/python/getting_started/install.html"],
+    ["Apache Spark · RDD Programming Guide", "https://spark.apache.org/docs/4.0.3/rdd-programming-guide.html"],
+    ["Apache Spark · Spark SQL, DataFrames and Datasets Guide", "https://spark.apache.org/docs/4.0.3/sql-programming-guide.html"],
+    ["Google Colab · Preguntas frecuentes", "https://research.google.com/colaboratory/faq.html"],
+    ["Microsoft · Orígenes de datos en Power BI Desktop", "https://learn.microsoft.com/power-bi/connect-data/desktop-data-sources"]
+  ];
+  return `<section class="blk sit"><header><span class="lab">Materiales y documentación oficial</span></header><ul>${L.map(([t, u]) => `<li>${u ? `<a href="${u}" target="_blank" rel="noopener">${esc(t)}</a><br><small>${u}</small>` : esc(t)}</li>`).join("")}</ul>
+   <p><small>Base curricular indicada en la guía: sílabo CIIN1021P, subtemas 7.1 a 7.4; guía oficial GUIALAB20261_TEMA7_CIIN1021P. Todas las salidas de este simulador son simulaciones didácticas calculadas en el navegador.</small></p></section>`;
+}
+
+/* =======================================================================
+   EVENTOS
+   ======================================================================= */
+document.addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.go) { go(b.dataset.go); return; }
+  const id = b.dataset.act;
+  if (b.dataset.do) {
+    const d = b.dataset.do;
+    if (d === "val") validate(id); else if (d === "hint") giveHint(id, b); else if (d === "exp") toggleExp(id, b);
+    else if (d === "sol") toggleSol(id, b); else if (d === "reset") resetAct(id);
+    else if (d === "resetall") $("#resetZone").innerHTML = `¿Borrar todo el avance? <button type="button" class="linkbtn" data-do="resetyes">Sí, borrar</button> · <button type="button" class="linkbtn" style="color:var(--ink)" data-do="resetno">No</button>`;
+    else if (d === "resetyes") { const pj = S.proj, dc = S.doc; S = FRESH(); S.proj = pj; S.doc = dc; save(); go("s1a"); toast("Avance reiniciado"); }
+    else if (d === "resetno") renderRail();
+    return;
+  }
+  if (b.dataset.opt != null) {
+    const d = ACT[id], st = A(id), i = +b.dataset.opt;
+    if (d.type === "choice") { st.val.pick = i; $$(`[data-act="${id}"][data-opt]`).forEach(o => { o.setAttribute("aria-pressed", o === b); o.classList.remove("ok", "bad"); }); }
+    else { const p = st.val.picks || (st.val.picks = []), k = p.indexOf(i); k >= 0 ? p.splice(k, 1) : p.push(i); b.setAttribute("aria-pressed", k < 0); $$(`[data-act="${id}"][data-opt]`).forEach(o => o.classList.remove("ok", "bad")); }
+    save(); return;
+  }
+  if (b.dataset.copy != null) {
+    const txt = COPYBUF[+b.dataset.copy];
+    const fallback = () => { const pre = b.closest(".cw").querySelector("pre"); const rg = document.createRange(); rg.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(rg); toast("Código seleccionado: usa Ctrl+C"); };
+    try { navigator.clipboard.writeText(txt).then(() => { b.textContent = "Copiado ✓"; setTimeout(() => b.textContent = "Copiar", 1500); }, fallback); } catch (e) { fallback(); }
+    return;
+  }
+  if (b.dataset.env) { S.sim.env = b.dataset.env; save(); rerender("env"); $(`[data-env="${b.dataset.env}"]`)?.focus(); return; }
+  if (b.dataset.vt) { S.sim.v.tab = b.dataset.vt; save(); rerender("viajes"); $(`[data-vt="${b.dataset.vt}"]`)?.focus(); return; }
+  if (b.dataset.col) { S.sim.v.col = b.dataset.col; save(); rerender("viajes"); $(`[data-col="${b.dataset.col}"]`)?.focus(); return; }
+  if (b.dataset.vg) { const v = S.sim.v; v.step = b.dataset.vg === "reset" ? 0 : b.dataset.vg === "all" ? 6 : Math.min(6, (v.step || 0) + 1); save(); rerender("viajes"); $(`[data-vg="${v.step >= 6 ? "reset" : "play"}"]`)?.focus(); return; }
+  if (b.dataset.tup != null) { S.sim.tsel = +b.dataset.tup; save(); rerender("tuplas"); $(`[data-tup="${b.dataset.tup}"]`)?.focus(); return; }
+  if (b.dataset.rd) { rddAction(b.dataset.rd); return; }
+  if (b.dataset.tm) { S.sim.tonm = b.dataset.tm; save(); rerender("ton"); return; }
+  if (b.dataset.vm) { S.sim.volm = b.dataset.vm; save(); rerender("vol"); return; }
+  if (b.dataset.st) { S.sim.sumTry = true; save(); rerender("stats"); return; }
+  if (b.dataset.pq) { S.sim.pqOpen = !S.sim.pqOpen; save(); rerender("parquet"); $("[data-pq]")?.focus(); return; }
+  if (b.dataset.rr) { const r = S.sim.rep, x = b.dataset.rr; r.regs = r.regs.includes(x) ? r.regs.filter(y => y !== x) : REGIONES.filter(y => r.regs.includes(y) || y === x); save(); rerender("report"); $(`[data-rr="${x}"]`)?.focus(); return; }
+  if (b.dataset.rds) { S.sim.rep.ds = b.dataset.rds; save(); rerender("report"); return; }
+  if (b.dataset.rt) {
+    const t = S.sim.reto;
+    if (b.dataset.rt === "reset") { t.left = 900; t.run = false; } else { if (t.left === 0) t.left = 900; t.run = !t.run; }
+    save(); if (t.run && !retoTimer) retoTimer = setInterval(retoTick, 1000); rerender("reto"); return;
+  }
+});
+function onInput(ev) {
+  const el = ev.target;
+  if (el.dataset.act && el.dataset.k) { A(el.dataset.act).val[el.dataset.k] = el.value; el.classList.remove("ok", "bad"); if (el.classList.contains("blank")) el.size = Math.max(+el.getAttribute("size") || 4, el.value.length + 1); save(); return; }
+  if (el.dataset.note) { S.notes[el.dataset.note] = el.value; save(); return; }
+  if (el.dataset.ev) { S.ev[el.dataset.ev] = el.checked; save(); return; }
+  if (el.dataset.rc) { S.sim.reto.chk[el.dataset.rc] = el.checked; save(); return; }
+}
+document.addEventListener("input", onInput);
+document.addEventListener("change", ev => { if (ev.target.tagName === "SELECT" || ev.target.type === "checkbox") onInput(ev); });
+document.addEventListener("keydown", ev => { if (ev.key === "Enter" && ev.target.matches("input.blank, input.f")) { ev.preventDefault(); validate(ev.target.dataset.act); } });
+
+function applyPrefs() {
+  document.documentElement.classList.toggle("proj", !!S.proj);
+  $("#projBtn").setAttribute("aria-pressed", !!S.proj);
+  $("#docBtn").setAttribute("aria-pressed", !!S.doc);
+  $("#docBtn").textContent = S.doc ? "Ocultar solución docente" : "Mostrar solución docente";
+}
+$("#projBtn").addEventListener("click", () => { S.proj = !S.proj; save(); applyPrefs(); });
+$("#docBtn").addEventListener("click", () => { S.doc = !S.doc; save(); applyPrefs(); renderAll(); toast(S.doc ? "Modo docente activo: organiza la explicación; no es un sistema de seguridad" : "Modo docente desactivado"); });
+$("#menuBtn").addEventListener("click", () => { const o = $("#rail").classList.toggle("open"); $("#menuBtn").setAttribute("aria-expanded", o); });
+
+window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (h in SCR_IDX && h !== S.scr) go(h); });
+applyPrefs();
+if (S.sim.reto) S.sim.reto.run = false;
+const hash = (location.hash || "").slice(1);
+go(hash in SCR_IDX ? hash : S.scr, false);
+</script>
+
+</body></html>

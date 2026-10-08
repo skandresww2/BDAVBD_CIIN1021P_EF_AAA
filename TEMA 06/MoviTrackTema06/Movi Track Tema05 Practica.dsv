@@ -1,0 +1,145 @@
+﻿<DataSourceView xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl300="http://schemas.microsoft.com/analysisservices/2011/engine/300" xmlns:ddl300_300="http://schemas.microsoft.com/analysisservices/2011/engine/300/300" xmlns:ddl400="http://schemas.microsoft.com/analysisservices/2012/engine/400" xmlns:ddl400_400="http://schemas.microsoft.com/analysisservices/2012/engine/400/400" xmlns:ddl500="http://schemas.microsoft.com/analysisservices/2013/engine/500" xmlns:ddl500_500="http://schemas.microsoft.com/analysisservices/2013/engine/500/500" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0" dwd:design-time-name="94ec8ae8-c3e6-4a2e-98e5-04e3ada31054" xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
+  <ID>Movi Track Tema05 Practica</ID>
+  <Name>Movi Track Tema05 Practica</Name>
+  <CreatedTimestamp>0001-01-01T00:00:00Z</CreatedTimestamp>
+  <LastSchemaUpdate>0001-01-01T00:00:00Z</LastSchemaUpdate>
+  <Annotations>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:ShowFriendlyNames</Name>
+      <Value>true</Value>
+    </Annotation>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:CurrentLayout</Name>
+      <Value>_ALL_TABLES_</Value>
+    </Annotation>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:SchemaRestriction</Name>
+      <Value></Value>
+    </Annotation>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:RetrieveRelationships</Name>
+      <Value>true</Value>
+    </Annotation>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:Layouts</Name>
+      <Value>
+        <Layouts xmlns="">
+          <Diagram>
+            <Name>_ALL_TABLES_</Name>
+            <DiagramLayout />
+            <ShowRelationshipNames>False</ShowRelationshipNames>
+            <UseDiagramDefaultLayout>True</UseDiagramDefaultLayout>
+            <DiagramViewPortLeft>0</DiagramViewPortLeft>
+            <DiagramViewPortTop>0</DiagramViewPortTop>
+            <DiagramBoundingLeft>0</DiagramBoundingLeft>
+            <DiagramBoundingTop>0</DiagramBoundingTop>
+            <DiagramZoom>100</DiagramZoom>
+          </Diagram>
+        </Layouts>
+      </Value>
+    </Annotation>
+  </Annotations>
+  <DataSourceID>Movi Track Tema05 Practica</DataSourceID>
+  <Schema>
+    <xs:schema id="Movi_x0020_Track_x0020_Tema05_x0020_Practica" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
+      <xs:element name="Movi_x0020_Track_x0020_Tema05_x0020_Practica" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:design-time-name="1bf6e42a-5266-4a93-b689-3d4f82cd3374">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="dbo_DimFechaE02" msprop:DbTableName="DimFechaE02" msprop:FriendlyName="DimFechaE02" msprop:TableType="Table" msprop:DbSchemaName="dbo" msprop:design-time-name="a4821654-b876-4891-b9ae-fd64aa0d4f0a">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="FechaKey" msprop:FriendlyName="FechaKey" msprop:DbColumnName="FechaKey" msprop:design-time-name="c4480a44-cbdd-436f-ab2c-f050d0776bd0" type="xs:int" />
+                  <xs:element name="Fecha" msprop:FriendlyName="Fecha" msprop:DbColumnName="Fecha" msprop:design-time-name="765b54c5-8ebf-4d15-866f-b9f5fe09284a" type="xs:dateTime" />
+                  <xs:element name="Anio" msprop:FriendlyName="Anio" msprop:DbColumnName="Anio" msprop:design-time-name="af3c2200-f0c6-4a02-9c10-f2cb09b8d5cb" type="xs:int" />
+                  <xs:element name="Mes" msprop:FriendlyName="Mes" msprop:DbColumnName="Mes" msprop:design-time-name="6aa8d200-87d1-46e0-b10f-0831e377c532" type="xs:int" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="dbo_DimServicioE02" msprop:DbTableName="DimServicioE02" msprop:FriendlyName="DimServicioE02" msprop:TableType="Table" msprop:DbSchemaName="dbo" msprop:design-time-name="5f6aee1f-4ef0-43c8-93b1-2fac62be40d8">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="ServicioKey" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:FriendlyName="ServicioKey" msprop:DbColumnName="ServicioKey" msprop:design-time-name="97faf8d7-9e82-48b4-929b-8d61bc3041d7" type="xs:int" />
+                  <xs:element name="Servicio" msprop:FriendlyName="Servicio" msprop:DbColumnName="Servicio" msprop:design-time-name="da489a2b-2ffd-4491-82ad-9c016ce69126">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="30" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="dbo_DimUbicacionE02" msprop:DbTableName="DimUbicacionE02" msprop:FriendlyName="DimUbicacionE02" msprop:TableType="Table" msprop:DbSchemaName="dbo" msprop:design-time-name="fdbaf1bf-13b7-4aa3-8a01-3a9a964f8caa">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="UbicacionKey" msdata:ReadOnly="true" msdata:AutoIncrement="true" msprop:FriendlyName="UbicacionKey" msprop:DbColumnName="UbicacionKey" msprop:design-time-name="3d259b53-1454-45c2-bcdc-1692407d59da" type="xs:int" />
+                  <xs:element name="Distrito" msprop:FriendlyName="Distrito" msprop:DbColumnName="Distrito" msprop:design-time-name="c3128222-264f-4180-aeee-ae6f6a9b7fc7">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="40" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="dbo_FactViajeE04" msprop:DbTableName="FactViajeE04" msprop:FriendlyName="FactViajeE04" msprop:TableType="Table" msprop:DbSchemaName="dbo" msprop:design-time-name="e1d7175b-9c84-4c58-9d70-00778408f636">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Origen" msprop:FriendlyName="Origen" msprop:DbColumnName="Origen" msprop:design-time-name="0cdebd81-828f-4edb-ab69-69a41ae9b398">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="10" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="CodigoViaje" msprop:FriendlyName="CodigoViaje" msprop:DbColumnName="CodigoViaje" msprop:design-time-name="8bcca94e-a4d5-42de-a72c-aa5a87882c19">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="10" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="FechaKey" msprop:FriendlyName="FechaKey" msprop:DbColumnName="FechaKey" msprop:design-time-name="93aa53bf-9689-4953-bc5d-b65de1e329a6" type="xs:int" />
+                  <xs:element name="ServicioKey" msprop:FriendlyName="ServicioKey" msprop:DbColumnName="ServicioKey" msprop:design-time-name="a05638fa-4ed6-43a5-8302-147daa253078" type="xs:int" />
+                  <xs:element name="UbicacionKey" msprop:FriendlyName="UbicacionKey" msprop:DbColumnName="UbicacionKey" msprop:design-time-name="8b491a3e-438d-4ba6-873b-221125f0d78d" type="xs:int" />
+                  <xs:element name="Importe" msprop:FriendlyName="Importe" msprop:DbColumnName="Importe" msprop:design-time-name="7ffbf5a2-c175-4e1a-87e6-dd2dde160f62" type="xs:decimal" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+        <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+          <xs:selector xpath=".//dbo_DimFechaE02" />
+          <xs:field xpath="FechaKey" />
+        </xs:unique>
+        <xs:unique name="dbo_DimServicioE02_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+          <xs:selector xpath=".//dbo_DimServicioE02" />
+          <xs:field xpath="ServicioKey" />
+        </xs:unique>
+        <xs:unique name="dbo_DimUbicacionE02_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+          <xs:selector xpath=".//dbo_DimUbicacionE02" />
+          <xs:field xpath="UbicacionKey" />
+        </xs:unique>
+        <xs:unique name="dbo_FactViajeE04_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+          <xs:selector xpath=".//dbo_FactViajeE04" />
+          <xs:field xpath="Origen" />
+          <xs:field xpath="CodigoViaje" />
+        </xs:unique>
+        <xs:keyref name="FK_FactViajeE04_Ubicacion" refer="dbo_DimUbicacionE02_Constraint1">
+          <xs:selector xpath=".//dbo_FactViajeE04" />
+          <xs:field xpath="UbicacionKey" />
+        </xs:keyref>
+        <xs:keyref name="FK_FactViajeE04_Fecha" refer="Constraint1">
+          <xs:selector xpath=".//dbo_FactViajeE04" />
+          <xs:field xpath="FechaKey" />
+        </xs:keyref>
+        <xs:keyref name="FK_FactViajeE04_Servicio" refer="dbo_DimServicioE02_Constraint1">
+          <xs:selector xpath=".//dbo_FactViajeE04" />
+          <xs:field xpath="ServicioKey" />
+        </xs:keyref>
+      </xs:element>
+    </xs:schema>
+    <Movi_x0020_Track_x0020_Tema05_x0020_Practica xmlns="" />
+  </Schema>
+</DataSourceView>

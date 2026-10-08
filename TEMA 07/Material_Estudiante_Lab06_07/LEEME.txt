@@ -1,0 +1,15 @@
+INICIO RÁPIDO
+
+1. Descomprime este paquete en tu computadora.
+2. Abre https://colab.research.google.com y Archivo > Subir cuaderno.
+3. Selecciona el notebook de la sesión 1 y conecta un entorno CPU.
+4. Ejecuta las celdas de instalación, Java e inicio de Spark, en orden.
+5. Cuando aparezca Elegir archivos, sube datos_tema07.zip SIN descomprimir.
+6. Completa los TODO antes de ejecutar sus celdas. Guarda tu propio notebook.
+7. Para sesión 2 abre su notebook y repite el arranque. Es independiente.
+8. Al terminar descarga resumen_region.csv y resultados_tema07.zip.
+9. Abre Power BI Desktop para crear y guardar el reporte como indica la guía.
+10. Resuelve el reto de plástico por región al final de E05 y descarga
+    reto_plastico.csv por separado. No requiere otro gráfico ni otro PBIX.
+
+Las guías de Word contienen teoría breve, pasos, controles y evidencias.
